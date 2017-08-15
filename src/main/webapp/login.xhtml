@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition template="/WEB-INF/facelets/templates/loginTemplate.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.Aplicacion}" />
+        </ui:define>
+        <ui:define name="content"  >
+            <p:growl id="messages" showDetail="false" />
+            <p:panel id="pnGralLogin" styleClass="panelLogin" rendered="#{not mbSesion.logeado}" >
+                <h:panelGrid columns="2" cellpadding="10" >
+                    <img src="#{request.contextPath}/resources/img/users-1.png" width="50" height="50" style="float: left; margin-left: 15px" />
+                    <p:outputLabel styleClass="titPanel" value="Iniciar Sesión" />
+                </h:panelGrid>
+                <p:panel id="pnInstructivoLogin" >
+                    <p:outputLabel value="Instructivo sobre el inicio de sesión." 
+                                   style="font-style: italic; font-size: small" />
+                </p:panel>
+                <br></br>
+                <h:form prependId="false" id="frLogin">
+                    <p:panel id="pnFrmLogin" style="position:relative; width:60%; left:20%;" >
+                        
+                        <h:panelGrid columns="2" cellpadding="10" style="position:relative; left:20%" >
+                            <p:outputLabel value="CUIT" for="lg_cuit"/>
+                            <p:inputNumber id="lg_cuit" value="#{mbSesion.cuit}" decimalPlaces="0" thousandSeparator="" maxValue="99999999999"
+                                     requiredMessage="Debe ingresar el CUIT" required="true"/>
+                            <p:outputLabel value="Clave" for="lg_clave"/>
+                            <p:password id="lg_clave" value="#{mbSesion.clave}" style=" width: 120px" 
+                                     requiredMessage="Debe ingresar .a Clave" required="true"/>
+                        </h:panelGrid>
+                    </p:panel>
+                    <p:panel id="pnBotones" style="position:relative; width:60%; left:20%;" >
+                        <h:panelGrid columns="2" style="position:relative; width:40%; left:30%">
+                            <p:commandButton styleClass="save" icon="fa fa-fw fa-play-circle" value="Iniciar" action="#{mbSesion.login()}" ajax="false" title="Iniciar sesión" />
+                            <p:commandButton icon="fa fa-fw fa-refresh" value="Limpiar" action="#" resetValues="true" title="Limpiar formulario" />
+                        </h:panelGrid>
+                    </p:panel>
+                </h:form>    
+            </p:panel>
+            
+            <p:panel id="pnGralCuenta" styleClass="panelLogin" rendered="#{mbSesion.logeado}" >
+                <h:panelGrid columns="2" cellpadding="10" >
+                    <img src="#{request.contextPath}/resources/img/users-1.png" width="50" height="50" style="float: left; margin-left: 15px" />
+                    <p:outputLabel styleClass="titPanel" value="Validar Cuenta" />
+                </h:panelGrid>
+                <p:panel id="pnInstructivoCuenta" >
+                    <p:outputLabel value="Instructivo sobre la validación de la cuenta." 
+                                   style="font-style: italic; font-size: small" />
+                </p:panel>
+                <br></br>
+                <h:form prependId="false" id="frNewCuenta">
+                    <!-- Formulario new -->
+                    <p:panel id="pnFrmCuenta" header="Crear/Editar" >
+                        <h:panelGrid columns="2">
+                            <p:outputLabel value="Nombre Completo" for="nombreCompleto"/>
+                            <p:outputLabel id="nombreCompleto" value="#{mbSesion.personaRue.nombreCompleto}" style="font-weight: bold"/>
+                            <p:outputLabel value="Tipo de Persona" for="tipoPersona"/>
+                            <p:outputLabel id="tipoPersona" value="#{mbSesion.personaRue.tipo.nombre}" style="font-weight: bold"/>
+                            <p:outputLabel value="CUIT" for="cuit"/>
+                            <p:outputLabel id="cuit" value="#{mbSesion.personaRue.cuit}" style="font-weight: bold"/>
+                        </h:panelGrid>
+                        <p:separator />
+                        <h:panelGrid columns="2">
+                            <p:outputLabel value="Calle" for="calle"/>
+                            <p:outputLabel id="calle" value="#{mbSesion.personaRue.domicilio.calle}" style="font-weight: bold"/>
+                            <p:outputLabel value="N°" for="numero"/>
+                            <p:outputLabel id="numero" value="#{mbSesion.personaRue.domicilio.numero}" style="font-weight: bold"/>
+                            <p:outputLabel value="Depto." for="depto"/>
+                            <p:outputLabel id="depto" value="#{mbSesion.personaRue.domicilio.depto}" style="font-weight: bold"/>
+                            <p:outputLabel value="Piso" for="piso"/>
+                            <p:outputLabel id="piso" value="#{mbSesion.personaRue.domicilio.piso}" style="font-weight: bold"/>
+                            
+                            <p:outputLabel value="Provincia " for="cmbProv"/>   
+                            <p:selectOneMenu required="true" requiredMessage="Debe selecionar la Provincia" id="cmbProv" 
+                                             value="#{mbSesion.provSelected}" converter="omnifaces.SelectItemsConverter"  >
+                                <f:selectItem itemLabel="Seleccione la Provincia" itemValue="" noSelectionOption="true"/>
+                                <f:selectItems value="#{mbSesion.listProvincias}" 
+                                               var="prov" itemLabel="#{prov.nombre}" itemValue="#{prov}"/>
+                                <p:ajax listener="#{mbSesion.provinciaChangeListener()}" update="cmbDepto,cmbLocalidades" />
+                            </p:selectOneMenu> 
+                            <p:outputLabel value="Departamento" for="cmbDepto"/>   
+                            <p:selectOneMenu required="true" requiredMessage="Debe selecionar el Departamiento"  id="cmbDepto" 
+                                             value="#{mbSesion.deptoSelected}" converter="omnifaces.SelectItemsConverter"  >
+                                <f:selectItem itemLabel="Seleccione el Departamento" itemValue="" noSelectionOption="true"/>
+                                <f:selectItems value="#{mbSesion.listDepartamentos}" 
+                                               var="depto" itemLabel="#{depto.nombre}" itemValue="#{depto}"/>
+                                <p:ajax listener="#{mbSesion.deptoChangeListener()}" update="cmbLocalidades" />
+                            </p:selectOneMenu>  
+                            <p:outputLabel value="Localidad" for="cmbLocalidades"/>   
+                            <p:selectOneMenu required="true" requiredMessage="Debe selecionar la Localidad"  id="cmbLocalidades" 
+                                             value="#{mbSesion.localSelected}" converter="omnifaces.SelectItemsConverter"  >
+                                <f:selectItem itemLabel="Seleccione la Localidad" itemValue="" noSelectionOption="true"/>
+                                <f:selectItems value="#{mbSesion.listLocalidades}" 
+                                               var="loc" itemLabel="#{loc.nombre}" itemValue="#{loc}"/>
+                            </p:selectOneMenu> 
+                        </h:panelGrid>
+                        <p:separator />
+                        <h:panelGrid columns="2">
+                            <p:outputLabel value="Nueva clave" for="newClave"/>
+                            <p:password id="newClave" value="#{mbSesion.newClave}" style=" width: 120px" 
+                                     requiredMessage="Debe ingresar la nueva clave" required="true"/>
+                            <p:outputLabel value="Repita la nueva clave" for="newClave2"/>
+                            <p:password id="newClave2" value="#{mbSesion.newClave2}" style=" width: 120px" 
+                                     requiredMessage="Debe repetir la nueva clave" required="true"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="2">
+                            <p:commandButton styleClass="save" icon="fa fa-fw fa-save" value="Guardar" action="#{mbSesion.saveCuenta()}" ajax="false" />
+                            <p:commandButton icon="fa fa-fw fa-refresh" value="Limpiar" action="#{mbSesion.limpiarFormCuenta()}" update="frNewCuenta"/>
+                        </h:panelGrid>
+                    </p:panel>
+                </h:form>    
+            </p:panel>
+        </ui:define>
+    </ui:composition>
+</html>
+

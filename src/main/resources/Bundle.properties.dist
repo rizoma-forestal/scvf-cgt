@@ -1,0 +1,14 @@
+# Archivo de configuraciones estáticas
+Aplicacion=SACVeFor - Gestión de Trazabilidad
+
+RutaAplicacion=/trazabilidad
+
+TimeZone=America/Buenos_Aires
+
+# Claves para encriptar y desencriptar las contraseñas de los usurios a validar para el acceso de la API REST
+ClaveEncriptar=ministeriodeambiente
+ClaveDesencriptar=zorbazorbas
+
+# Rutas
+Guias=faces/guias
+EntidadesParametricas=faces/param

@@ -1,0 +1,79 @@
+# Parámetros dinámicos
+Server=http://localhost:8080
+ServerServicios=http://localhost:8080
+UrlTerritorial=/gestionTerritorial/rest
+UrlEspecies=/especiesVegetales/rest
+UrlEntidades=/rue/rest
+UrlCtrlVerif=/ctrlVerif/rest
+
+# Claves para encriptar y desencriptar las contraseñas de los usurios
+ClaveEncriptar=bosquesnativosycomunidad
+ClaveDesencriptar=trazabilidad
+
+# Estados Guías
+EstCerrada=CERRADA
+
+# Tipos Guía
+TipoLocal=GESTION LOCAL
+TipoPrimaira=PRIMARIA
+
+# Tipos de Items
+TipoItemGestLocal=GESTION LOCAL
+TipoItemPrim=PRIMARIO
+TipoItemDer=DERIVADO
+TipoItemProd=PRODUCTIVO
+
+# ------------------ #
+# Datos Responsables #
+# ------------------ #
+EntidadBosques=Dirección de Bosques
+EntidadBosqesSup_1=Dirección Nacional de Bosques, Ordenamiento Territorial y Suelos
+EntidadBosqesSup_2=Subsecretaría de Planificación y Ordenamiento Ambiental de Territorio
+EntidadBosqesSup_3=Secretaría de Política Ambiental, Cambio Climático y Desarrollo Sustentable
+EntidadBosqesSup_4=Ministerio de Ambiente y Desarrollo Sustentable
+DomicilioBosques=Tucumán 636 5° Piso - CABA
+TelBosques=(54) (11) 5218-4640
+emailBosques=rincostante@ambiente.gob.ar
+
+# -------------------------------------------------- #
+# Tipos de Parámetros de Cotrol y Verificación (CCV) #
+# -------------------------------------------------- #
+CtrlTipoParamRolUs=ROL_USUARIOS
+CtrlTipoParamTipoResult=TIPO_RESULT
+CtrlTipoParamEstGuia=EST_GUIAS
+
+# ----------------------------------------------- #
+# Estados de Guías de Cotrol y Verificación (CCV) #
+# ----------------------------------------------- #
+CtrlGuiaVigente=VIGENTE
+CtrlGuiaCerrada=CERRADA
+CtrlGuiaAnulada=ANULADA
+CtrlGuiaIntervenida=INTERVENIDA
+CtrlGuiaSuspendida=SUSPENDIDA
+
+# ------------- #
+# Títulos Menús #
+# ------------- #
+# Inicio
+Inicio=Inicio
+# Gestión
+GuiasConf=Guías a confirmar
+GuiasAcred=Guías acreditadas
+# Administración
+
+# ------------------- #
+# Tipos de parámetros #
+# ------------------- #
+RolUsuarios=ROL_USUARIOS
+TipoItem=TIPO_ITEM
+
+# ----------------- #
+# Roles de Usuarios #
+# ----------------- #
+Administrador=ADMINISTRADOR
+Transformador=TRANSFORMADOR
+Acopiador=ACOPIADOR
+
+# -------- #
+# Máscaras #
+# -------- #

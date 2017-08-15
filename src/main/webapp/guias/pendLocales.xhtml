@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition template="/WEB-INF/facelets/templates/indexTemplate.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.Aplicacion}" />
+        </ui:define>
+        <ui:define name="content"  >
+            <p:growl id="messages" showDetail="false" />
+            <p:panel id="pnListGuias" styleClass="abmparam" >
+                <h:panelGrid columns="2" cellpadding="10" >
+                    <img src="#{request.contextPath}/resources/img/hourglass-1.png" width="50" height="50" style="float: left; margin-left: 15px" />
+                    <p:outputLabel styleClass="titPanel" value="Guías a Confirmar" />
+                </h:panelGrid>
+                <h:form prependId="false" id="frListGuias">
+                    <!-- Selección -->
+                    <p:panel id="pnFrmSelProv" rendered="#{mbGuiaCierre.provinciaSelected.id eq null}" >
+                        <h:panelGrid columns="2" >
+                            <p:outputLabel value="Instructivo sobre la selección de la Provincia desde la que se emitió la Guía." 
+                                   style="font-style: italic; font-size: small" />
+                        </h:panelGrid>
+                        <br></br>
+                        <h:panelGrid columns="2" >
+                            <p:outputLabel value="Provincia origen :" for="cmbProv"/>   
+                            <p:selectOneMenu required="true" requiredMessage="Debe seleccionar la Provincia"  id="cmbProv" 
+                                             value="#{mbGuiaCierre.provinciaSelected}" converter="omnifaces.SelectItemsConverter"  >
+                                <f:selectItem itemLabel="Seleccione la Provincia" itemValue="" noSelectionOption="true"/>
+                                <f:selectItems value="#{mbGuiaCierre.lstProvincias}" 
+                                               var="prov" itemLabel="#{prov.provincia}" itemValue="#{prov}"/>
+                                <p:ajax listener="#{mbGuiaCierre.cargarGuiasLocales()}" update="pnListGuias,messages" />
+                            </p:selectOneMenu>  
+                        </h:panelGrid>
+                    </p:panel>
+                    
+                    <!-- Vista detalle -->
+                    <p:panel id="pnFrmView" header="Detalle de la Guía Seleccionada" rendered="#{mbGuiaCierre.view}" >
+                        <h:panelGrid id="pgDatosGrales" columns="2" >
+                            <p:outputLabel value="Código: " for="codigo"/> 
+                            <p:outputLabel id="codigo" value="#{mbGuiaCierre.guiaLocalSelected.codigo}" style=" font-weight: bold" />
+                            <p:outputLabel value="Nombre Titular: " for="nomTitular"/> 
+                            <p:outputLabel id="nomTitular" value="#{mbGuiaCierre.guiaLocalSelected.origen.nombreCompleto} " style=" font-weight: bold" />
+                            <p:outputLabel value="Cuit Titular: " for="cuitTitular"/> 
+                            <p:outputLabel id="cuitTitular" value="#{mbGuiaCierre.guiaLocalSelected.origen.cuit}" style=" font-weight: bold" />
+                            <p:outputLabel value="Fecha de emisión: " for="fechaEmision"/>
+                            <p:outputLabel id="fechaEmision" value="#{mbGuiaCierre.guiaLocalSelected.fechaEmisionGuia}" style=" font-weight: bold" >
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:outputLabel>
+                            <p:outputLabel value="Fecha de vencimiento " for="fechaVenc"/>
+                            <p:outputLabel id="fechaVenc" value="#{mbGuiaCierre.guiaLocalSelected.fechaVencimiento}" style=" font-weight: bold" >
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </p:outputLabel>
+                        </h:panelGrid>
+                        <p:separator />
+                        <h:panelGrid id="pgGuiaItems" columns="1" >
+                            <p:outputLabel value="Detalle de Productos" style="font-weight: bold" />
+                            <p:dataTable styleClass="table" value="#{mbGuiaCierre.lstItemLocales}"
+                                         var="item"
+                                         id="dtGuiaItems" >
+                                <p:column headerText="id" style="width:50px">
+                                    <p:outputLabel value="#{item.id}"/>
+                                </p:column>
+                                <p:column headerText="Especie local" >
+                                    <p:outputLabel value="#{item.nombreVulgar}"/>
+                                </p:column>
+                                <p:column headerText="Nombre científico" >
+                                    <p:outputLabel value="#{item.nombreCientifico}"/>
+                                </p:column>
+                                <p:column headerText="Clase" >
+                                    <p:outputLabel value="#{item.clase}"/>
+                                </p:column>
+                                <p:column headerText="Unidad" >
+                                    <p:outputLabel value="#{item.unidad}"/>
+                                </p:column>
+                                <p:column headerText="Saldo disp." style="text-align: right !important;" >
+                                    <p:outputLabel value="#{item.saldo}" >
+                                        <f:convertNumber type="currency"  currencySymbol="" minFractionDigits="2"/>
+                                    </p:outputLabel>
+                                </p:column>
+                                <p:column headerText="Saldo en Kg." style="text-align: right !important;" >
+                                    <p:outputLabel value="#{item.saldoKg}" >
+                                        <f:convertNumber type="currency"  currencySymbol="" minFractionDigits="2"/>
+                                    </p:outputLabel>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGrid>
+                        <h:panelGrid columns="2" >
+                            <p:commandButton icon="fa fa-fw fa-download" value="Confirmar recepción" 
+                                             title="Cerrar la Guía y acreditar sus productos en la Cuenta personal" 
+                                             update="frListGuias,messages" action="#{mbGuiaCierre.aceptarGuia()}" />
+                            <p:commandButton icon="fa fa-fw fa-reply" value="Volver" title="Cerrar el detalle y volver al listado" 
+                                             update="frListGuias" action="#{mbGuiaCierre.prepareList()}" />
+                        </h:panelGrid>
+                    </p:panel>
+
+                    <!-- Listado -->
+                    <p:panel id="pnTabla" header="Guías pendientes provenientes de la Provincia de #{mbGuiaCierre.provinciaSelected.provincia}" 
+                             style="margin-bottom:10px;" rendered="#{mbGuiaCierre.provinciaSelected.id ne null and not mbGuiaCierre.view}">
+                        <p:dataTable styleClass="table" value="#{mbGuiaCierre.lstGuiasLocal}"
+                                     filteredValue="#{mbGuiaCierre.lstGuiasLocalFilters}"
+                             var="guia"
+                             id="dtGuia" 
+                             rows="5"
+                             paginator="true"      
+                             widgetVar="guiaTable"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15">
+                            <f:facet name="header">
+                                <p:commandButton icon="fa fa-fw fa-refresh" value="Limpiar filtros" 
+                                         onclick="PF('guiaTable').clearFilters()" update="dtGuia"/>
+                                <p:commandButton id="toggler" type="button" value="Columnas" icon="ui-icon-calculator" style="margin-left: 10px" />
+                                <p:columnToggler datasource="dtGuia" trigger="toggler" />
+                            </f:facet>
+                            <p:column headerText="Código" 
+                                filterMatchMode="contains"
+                                sortBy="#{guia.codigo}" 
+                                filterBy="#{guia.codigo}" >
+                                <p:outputLabel value="#{guia.codigo}"/>
+                            </p:column>
+                            <p:column headerText="Nombre del Titular" 
+                                filterMatchMode="contains"
+                                sortBy="#{guia.origen.nombreCompleto}" 
+                                filterBy="#{guia.origen.nombreCompleto}" >
+                                <p:outputLabel value="#{guia.origen.nombreCompleto}" />
+                            </p:column>  
+                            <p:column headerText="Cuit del Titular" 
+                                filterMatchMode="contains"
+                                sortBy="#{guia.origen.cuit}" 
+                                filterBy="#{guia.origen.cuit}" >
+                                <p:outputLabel value="#{guia.origen.cuit}" />
+                            </p:column>  
+                            <p:column headerText="Emisión" 
+                                filterMatchMode="contains"
+                                sortBy="#{guia.fechaEmisionGuia}" 
+                                filterBy="#{guia.fechaEmisionGuia}" >
+                                <p:outputLabel value="#{guia.fechaEmisionGuia}" >
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Vencimiento" 
+                                filterMatchMode="contains"
+                                sortBy="#{guia.fechaVencimiento}" 
+                                filterBy="#{guia.fechaVencimiento}" >
+                                <p:outputLabel value="#{guia.fechaVencimiento}" >
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column style="width:30px">
+                                <p:commandButton styleClass="fa" icon="fa fa-fw fa-search-plus" title="Ver detalle" 
+                                                 action="#{mbGuiaCierre.prepareView()}" update="pnListGuias" >
+                                    <f:setPropertyActionListener value="#{guia}" target="#{mbGuiaCierre.guiaLocalSelected}" /> 
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+                </h:form>
+            </p:panel>
+        </ui:define>
+    </ui:composition>
+</html>            
+
