@@ -240,7 +240,7 @@ public class MbGuiaCierre implements Serializable{
             GenericType<List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia>> gTypeG = new GenericType<List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia>>() {};
             Response response = guiaCtrlClient.findByQuery_JSON(Response.class, guiaLocalSelected.getCodigo(), null, null);
             lstGuias = response.readEntity(gTypeG);
-            if(lstGuias.isEmpty()){
+            if(lstGuias.get(0) == null){
                 guiaCtrlClient.close();
                 // si no existe solo comunico al usuario
                 JsfUtil.addErrorMessage("La Guía que intenta cerrar no está registrada en el Componente de Control y Verificación. No podrá continuar, por favor, contacte al Administrador.");
@@ -292,8 +292,8 @@ public class MbGuiaCierre implements Serializable{
                 guia.setEstado(estado);
                 guia.setFechaAlta(fechaAlta);
                 guia.setFechaCierre(fechaAlta);
-                guia.setFechaEmisionGuia(fechaAlta);
-                guia.setFechaVencimiento(fechaAlta);
+                guia.setFechaEmisionGuia(guiaLocalSelected.getFechaEmisionGuia());
+                guia.setFechaVencimiento(guiaLocalSelected.getFechaVencimiento());
                 guia.setJurOrigen(provinciaSelected.getProvincia());
                 guia.setNumFuente(guiaLocalSelected.getCodigo());
                 guia.setTipo(tipoActual);
@@ -322,7 +322,7 @@ public class MbGuiaCierre implements Serializable{
                     if(response.getStatus() == 200){
                         // si el origen tiene configurado correo, comunico el cierre de la Guía
                         if(guiaLocalSelected.getOrigen().getEmail() != null){
-                            if(enviarCorreo()){
+                            if(!enviarCorreo()){
                                 JsfUtil.addErrorMessage("No se pudo enviar el mensaje de confirmación al Titular de la Guía emitida.");
                             }
                         }
