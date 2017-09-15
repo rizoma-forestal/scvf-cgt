@@ -30,7 +30,7 @@
                                      requiredMessage="Debe ingresar el CUIT" required="true"/>
                             <p:outputLabel value="Clave" for="lg_clave"/>
                             <p:password id="lg_clave" value="#{mbSesion.clave}" style=" width: 120px" 
-                                     requiredMessage="Debe ingresar .a Clave" required="true"/>
+                                     requiredMessage="Debe ingresar la Clave" required="true"/>
                         </h:panelGrid>
                     </p:panel>
                     <p:panel id="pnBotones" style="position:relative; width:60%; left:20%;" >
@@ -48,7 +48,8 @@
                     <p:outputLabel styleClass="titPanel" value="Validar Cuenta" />
                 </h:panelGrid>
                 <p:panel id="pnInstructivoCuenta" >
-                    <p:outputLabel value="Instructivo sobre la validación de la cuenta." 
+                    <p:outputLabel value="Para poder validar la titularidad de la cuenta, por favor consigne los datos territoriales de residencia 
+                                   faltates: Provincia, Departamento y Localidad." 
                                    style="font-style: italic; font-size: small" />
                 </p:panel>
                 <br></br>

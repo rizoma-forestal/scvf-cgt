@@ -25,7 +25,13 @@
             </p:layoutUnit>
 
             <p:layoutUnit id="botton" styleClass="botton" position="south" size="100" closable="true" collapsible="true" style="background-color: #07220E">
-
+                <h:panelGrid id="botPg" columns="2" style = "margin: 0 auto" >
+                    <h:panelGrid id="aut" columns="1" >
+                        <p:outputLabel value="#{config.EntidadBosques} - #{config.EntidadBosqesSup_1}" style="color: darkgrey" />
+                        <p:outputLabel value="#{config.EntidadBosqesSup_3} - #{config.EntidadBosqesSup_4}" style="color: darkgrey" />
+                        <p:outputLabel value="#{config.DomicilioBosques} - #{config.TelBosques}" style="color: darkgrey" />
+                    </h:panelGrid>
+                </h:panelGrid>
             </p:layoutUnit>
 
             <p:layoutUnit id="pnCentral" styleClass="centro" position="center" >
