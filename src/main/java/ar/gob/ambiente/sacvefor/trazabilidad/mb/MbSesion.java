@@ -330,6 +330,10 @@ public class MbSesion {
                     String ctxPath = ((ServletContext) contextoExterno.getContext()).getContextPath();
                     contextoExterno.redirect(ctxPath);
                 }else{
+                    // si no pudo mandar la notificación, cierro la sesión
+                    HttpSession session = (HttpSession) contextoExterno.getSession(false);
+                    session.invalidate();
+                    logeado = false;
                     JsfUtil.addErrorMessage("No se ha podido enviar la notificación al Usuario.");
                 }
             }catch(IOException ex){
@@ -395,11 +399,11 @@ public class MbSesion {
                     // redirecciono al inicio
                     String ctxPath = ((ServletContext) contextoExterno.getContext()).getContextPath();
                     contextoExterno.redirect(ctxPath);
-                    // cierro la sesión
-                    HttpSession session = (HttpSession) contextoExterno.getSession(false);
-                    session.invalidate();
-                    logeado = false;
                 }
+                // en cualquier caso cierro la sesión
+                HttpSession session = (HttpSession) contextoExterno.getSession(false);
+                session.invalidate();
+                logeado = false;
             }catch(IOException ex){
                 JsfUtil.addErrorMessage("Hubo un error actualizando la contraseña. " + ex.getMessage());
             }
@@ -544,15 +548,16 @@ public class MbSesion {
                 + "<strong>contraseña:</strong> " + newClave + "</p> "
                 + "<p>Por favor, no responda este correo. No divulgue ni comparta las credenciales de acceso.</p> "
                 + "<p>Saludos cordiales</p> "
-                + "<p>Dirección de Bosques</p> "
-                + "<p>Dirección Nacional de Bosques, Ordenamiento Territorial y Suelos<br/> "
-                + "Subsecretaría de Planificación y Ordenamiento Ambiental de Territorio<br/> "
-                + "Secretaría de Política Ambiental, Cambio Climático y Desarrollo Sustentable<br/> "
-                + "Ministerio de Ambiente y Desarrollo Sustentable<br/> "
+                
+                + "<p>" + ResourceBundle.getBundle("/Config").getString("EntidadBosques") + "</p> "
+                + "<p>" + ResourceBundle.getBundle("/Config").getString("EntidadBosqesSup_1") + "<br/> "
+                + ResourceBundle.getBundle("/Config").getString("EntidadBosqesSup_2") + "<br/> "
+                + ResourceBundle.getBundle("/Config").getString("EntidadBosqesSup_3") + "<br/> "
+                + ResourceBundle.getBundle("/Config").getString("EntidadBosqesSup_4") + "<br/> "
                 + "Presidencia de la Nación<br/> "
-                + "Reconquista 555 - CABA<br/> "
-                + "Teléfono: (54) (11) 4348-8662<br /> "
-                + "Correo electrónico: <a href=\"mailto:rincostante@ambiente.gob.ar\">rincostante@ambiente.gob.ar </a></p>";     
+                + ResourceBundle.getBundle("/Config").getString("DomicilioBosques") + "<br/> "
+                + ResourceBundle.getBundle("/Config").getString("TelBosques") + "<br /> "
+                + "Correo electrónico: <a href=\"mailto:" + ResourceBundle.getBundle("/Config").getString("emailBosques") + "\">" + ResourceBundle.getBundle("/Config").getString("emailBosques") + "</a></p>";    
         
         try{
             mensaje.setRecipient(Message.RecipientType.TO, new InternetAddress(usuario.getEmail()));
