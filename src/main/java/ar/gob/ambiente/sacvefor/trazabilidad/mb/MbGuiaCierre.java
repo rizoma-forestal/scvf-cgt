@@ -24,6 +24,7 @@ import ar.gob.ambiente.sacvefor.trazabilidad.facades.TipoGuiaFacade;
 import ar.gob.ambiente.sacvefor.trazabilidad.facades.TipoParamFacade;
 import ar.gob.ambiente.sacvefor.trazabilidad.util.JsfUtil;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -420,13 +421,14 @@ public class MbGuiaCierre implements Serializable{
      * @return 
      */    
     private boolean enviarCorreo() {
+        SimpleDateFormat formateador = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         boolean result;
         String bodyMessage;
         mensaje = new MimeMessage(mailSesion);
         bodyMessage = "<p>Estimado/a</p> "
-                + "<p>La Guía " + guiaLocalSelected.getCodigo() + " emitida el " + guiaLocalSelected.getFechaEmisionGuia() + " "
+                + "<p>La Guía " + guiaLocalSelected.getCodigo() + " emitida el " + formateador.format(guiaLocalSelected.getFechaEmisionGuia()) + " "
                 + "remitida a " + guiaLocalSelected.getDestino().getNombreCompleto() + " ha sido aceptada por el destinatario "
-                + "con fecha " + guiaLocalSelected.getFechaCierre() + ".</p>"
+                + "con fecha " + formateador.format(guiaLocalSelected.getFechaCierre()) + ".</p>"
                 + "<p>Por favor, no responda este correo.</p> "
                 + "<p>Saludos cordiales</p> "
                 + "<p>" + ResourceBundle.getBundle("/Config").getString("EntidadBosques") + "<br/> "
