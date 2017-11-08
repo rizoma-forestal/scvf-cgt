@@ -39,6 +39,8 @@
                     <!-- Vista detalle -->
                     <p:panel id="pnFrmView" header="Detalle de la Guía Seleccionada" rendered="#{mbGuiaCierre.view}" >
                         <h:panelGrid id="pgDatosGrales" columns="2" >
+                            <p:outputLabel value="Origen: " for="origen"/> 
+                            <p:outputLabel id="origen" value="#{mbGuiaCierre.provinciaSelected.provincia}" style=" font-weight: bold" />
                             <p:outputLabel value="Código: " for="codigo"/> 
                             <p:outputLabel id="codigo" value="#{mbGuiaCierre.guiaLocalSelected.codigo}" style=" font-weight: bold" />
                             <p:outputLabel value="Nombre Titular: " for="nomTitular"/> 

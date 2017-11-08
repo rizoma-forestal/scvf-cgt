@@ -198,7 +198,7 @@ public class UsuarioFacadeREST {
         mensaje = new MimeMessage(mailSesion);
         bodyMessage = "<p>Estimado/a</p> "
                 + "<p>" + motivo + ".</p> "
-                + "<p>Esta cuenta ha sido creada debido a que se ha remitido un Guía de Productos Forestales a su nombre.</p>"
+                + "<p>Esta cuenta ha sido creada debido a que se ha remitido una Guía de Productos Forestales a su nombre.</p>"
                 + "<p>Deberá iniciar sesión en en el siguiente link: " + ResourceBundle.getBundle("/Config").getString("Server") + ResourceBundle.getBundle("/Bundle").getString("RutaAplicacion") + " </p>"
                 + "<p>Las credenciales de acceso son las siguientes:</p> "
                 + "<p><strong>usuario:</strong> " + us.getLogin() + "<br/> "
