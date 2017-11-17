@@ -231,124 +231,118 @@ public class MbGuiaCierre implements Serializable{
     
     /**
      * Método para aceptar una Guía remitida a la cuenta del usuario.
-     * Solo se iniciará la operación si la Guía existe en el Componente de Control y Verificación
+     * Si la Guía no está persistida en el Componente de Control y Verificación (CCV)
+     * Se asume que es de tipo acopio interno (sin transporte, no controlada)
      */
     public void aceptarGuia(){
         try{
-            // busco la Guía en el CCV
-            guiaCtrlClient = new GuiaCtrlClient();
-            List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia> lstGuias;
-            GenericType<List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia>> gTypeG = new GenericType<List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia>>() {};
-            Response response = guiaCtrlClient.findByQuery_JSON(Response.class, guiaLocalSelected.getCodigo(), null, null);
-            lstGuias = response.readEntity(gTypeG);
-            if(lstGuias.get(0) == null){
-                guiaCtrlClient.close();
-                // si no existe solo comunico al usuario
-                JsfUtil.addErrorMessage("La Guía que intenta cerrar no está registrada en el Componente de Control y Verificación. No podrá continuar, por favor, contacte al Administrador.");
-            }else{
-                // seteo el id de la Guía en el CVF
-                Long idGuiaCtrl = lstGuias.get(0).getId();
-                // obtengo el estado de la Guía a persisitir
-                EstadoGuia estado = estadoFacade.getExistente(ResourceBundle.getBundle("/Config").getString("EstCerrada"));
-                // obtego el Tipo fuente y el Tipo Actual
-                TipoGuia tipoFuente = tipoGuiaFacade.getExistente(ResourceBundle.getBundle("/Config").getString("TipoLocal"));
-                TipoGuia tipoActual = tipoGuiaFacade.getExistente(ResourceBundle.getBundle("/Config").getString("TipoPrimaira"));
-                // obtengo la Cuenta del Usuario
-                Cuenta cuenta = cuentaFacade.getExistente(usLogueado.getLogin());
-                // seteo la fecha
-                Date fechaAlta = new Date(System.currentTimeMillis());
-                Guia guia = new Guia();
-                // genero el código de la Guía
-                guia.setCodigo(setCodigoGuia());
-                // obtengo los tipos de items
-                Parametrica tipoItemActual = obtenerParametro(ResourceBundle.getBundle("/Config").getString("TipoItem"), ResourceBundle.getBundle("/Config").getString("TipoItemPrim"));
-                Parametrica tipoItemOrigen = obtenerParametro(ResourceBundle.getBundle("/Config").getString("TipoItem"), ResourceBundle.getBundle("/Config").getString("TipoItemGestLocal"));
-                // seteo los items
-                List<Item> lstItems = new ArrayList<>();
-                for(ar.gob.ambiente.sacvefor.servicios.cgl.ItemProductivo it : lstItemLocales){
-                    // gero un Item por cada uno de la API
-                    Item item = new Item();
-                    item.setClase(it.getClase());
-                    item.setCodigoOrigen(it.getCodigoProducto());
-                    item.setFechaAlta(fechaAlta);
-                    item.setHabilitado(true);
-                    item.setIdEspecieTax(it.getIdEspecieTax());
-                    item.setItemOrigen(it.getId());
-                    item.setKilosXUnidad(it.getKilosXUnidad());
-                    item.setNombreCientifico(it.getNombreCientifico());
-                    item.setNombreVulgar(it.getNombreVulgar());
-                    item.setSaldo(it.getTotal());
-                    item.setSaldoKg(it.getSaldoKg());
-                    item.setTipoActual(tipoItemActual);
-                    item.setTipoOrigen(tipoItemOrigen);
-                    item.setTotal(it.getTotal());
-                    item.setTotalKg(it.getTotalKg());
-                    item.setUnidad(it.getUnidad());
-                    item.setUsuario(usLogueado);
-                    lstItems.add(item);
-                }
-                guia.setItems(lstItems);
-                // seteo el resto de los datos
-                guia.setDestino(cuenta);
-                guia.setEstado(estado);
-                guia.setFechaAlta(fechaAlta);
-                guia.setFechaCierre(fechaAlta);
-                guia.setFechaEmisionGuia(guiaLocalSelected.getFechaEmisionGuia());
-                guia.setFechaVencimiento(guiaLocalSelected.getFechaVencimiento());
-                guia.setJurOrigen(provinciaSelected.getProvincia());
-                guia.setNumFuente(guiaLocalSelected.getCodigo());
-                guia.setTipo(tipoActual);
-                guia.setTipoFuente(tipoFuente);
-                guia.setUsuario(usLogueado);
-                // persisto
-                guiaFacade.create(guia);
+            // obtengo el estado de la Guía a persisitir
+            EstadoGuia estado = estadoFacade.getExistente(ResourceBundle.getBundle("/Config").getString("EstCerrada"));
+            // obtego el Tipo fuente y el Tipo Actual
+            TipoGuia tipoFuente = tipoGuiaFacade.getExistente(ResourceBundle.getBundle("/Config").getString("TipoLocal"));
+            TipoGuia tipoActual = tipoGuiaFacade.getExistente(ResourceBundle.getBundle("/Config").getString("TipoPrimaira"));
+            // obtengo la Cuenta del Usuario
+            Cuenta cuenta = cuentaFacade.getExistente(usLogueado.getLogin());
+            // seteo la fecha
+            Date fechaAlta = new Date(System.currentTimeMillis());
+            Guia guia = new Guia();
+            // genero el código de la Guía
+            guia.setCodigo(setCodigoGuia());
+            // obtengo los tipos de items
+            Parametrica tipoItemActual = obtenerParametro(ResourceBundle.getBundle("/Config").getString("TipoItem"), ResourceBundle.getBundle("/Config").getString("TipoItemPrim"));
+            Parametrica tipoItemOrigen = obtenerParametro(ResourceBundle.getBundle("/Config").getString("TipoItem"), ResourceBundle.getBundle("/Config").getString("TipoItemGestLocal"));
+            // seteo los items
+            List<Item> lstItems = new ArrayList<>();
+            for(ar.gob.ambiente.sacvefor.servicios.cgl.ItemProductivo it : lstItemLocales){
+                // gero un Item por cada uno de la API
+                Item item = new Item();
+                item.setClase(it.getClase());
+                item.setCodigoOrigen(it.getCodigoProducto());
+                item.setFechaAlta(fechaAlta);
+                item.setHabilitado(true);
+                item.setIdEspecieTax(it.getIdEspecieTax());
+                item.setItemOrigen(it.getId());
+                item.setKilosXUnidad(it.getKilosXUnidad());
+                item.setNombreCientifico(it.getNombreCientifico());
+                item.setNombreVulgar(it.getNombreVulgar());
+                item.setSaldo(it.getTotal());
+                item.setSaldoKg(it.getSaldoKg());
+                item.setTipoActual(tipoItemActual);
+                item.setTipoOrigen(tipoItemOrigen);
+                item.setTotal(it.getTotal());
+                item.setTotalKg(it.getTotalKg());
+                item.setUnidad(it.getUnidad());
+                item.setUsuario(usLogueado);
+                lstItems.add(item);
+            }
+            guia.setItems(lstItems);
+            // seteo el resto de los datos
+            guia.setDestino(cuenta);
+            guia.setEstado(estado);
+            guia.setFechaAlta(fechaAlta);
+            guia.setFechaCierre(fechaAlta);
+            guia.setFechaEmisionGuia(guiaLocalSelected.getFechaEmisionGuia());
+            guia.setFechaVencimiento(guiaLocalSelected.getFechaVencimiento());
+            guia.setJurOrigen(provinciaSelected.getProvincia());
+            guia.setNumFuente(guiaLocalSelected.getCodigo());
+            guia.setTipo(tipoActual);
+            guia.setTipoFuente(tipoFuente);
+            guia.setUsuario(usLogueado);
+            // persisto
+            guiaFacade.create(guia);
 
-                // actualizo la Guía de Producción local
-                List<ar.gob.ambiente.sacvefor.servicios.cgl.EstadoGuia> lstEstados;
-                estadoGuiaLocClient = new EstadoGuiaLocalClient(provinciaSelected.getUrl());
-                // obtengo el estado de cerrada 
-                GenericType<List<ar.gob.ambiente.sacvefor.servicios.cgl.EstadoGuia>> gTypeEstado = new GenericType<List<ar.gob.ambiente.sacvefor.servicios.cgl.EstadoGuia>>() {};
-                response = estadoGuiaLocClient.findByQuery_JSON(Response.class, ResourceBundle.getBundle("/Config").getString("EstCerrada"));
-                lstEstados = response.readEntity(gTypeEstado);
-                estadoGuiaLocClient.close();
-                if(!lstEstados.isEmpty()){
-                    guiaLocalSelected.setEstado(lstEstados.get(0));
-                    // seteo la fecha de cierre
-                    guiaLocalSelected.setFechaCierre(fechaAlta);
-                    // actualizo
-                    guiaLocalClient = new GuiaLocalClient(provinciaSelected.getUrl());
-                    response = guiaLocalClient.edit_JSON(guiaLocalSelected, String.valueOf(guiaLocalSelected.getId()));
-                    guiaLocalClient.close();
-                    // respondo según el mensaje recibido
-                    if(response.getStatus() == 200){
-                        // si el origen tiene configurado correo, comunico el cierre de la Guía
-                        if(guiaLocalSelected.getOrigen().getEmail() != null){
-                            if(!enviarCorreo()){
-                                JsfUtil.addErrorMessage("No se pudo enviar el mensaje de confirmación al Titular de la Guía emitida.");
-                            }
+            // actualizo la Guía de Producción local
+            List<ar.gob.ambiente.sacvefor.servicios.cgl.EstadoGuia> lstEstados;
+            estadoGuiaLocClient = new EstadoGuiaLocalClient(provinciaSelected.getUrl());
+            // obtengo el estado de cerrada 
+            GenericType<List<ar.gob.ambiente.sacvefor.servicios.cgl.EstadoGuia>> gTypeEstado = new GenericType<List<ar.gob.ambiente.sacvefor.servicios.cgl.EstadoGuia>>() {};
+            Response responseCgl = estadoGuiaLocClient.findByQuery_JSON(Response.class, ResourceBundle.getBundle("/Config").getString("EstCerrada"));
+            lstEstados = responseCgl.readEntity(gTypeEstado);
+            estadoGuiaLocClient.close();
+            if(!lstEstados.isEmpty()){
+                guiaLocalSelected.setEstado(lstEstados.get(0));
+                // seteo la fecha de cierre
+                guiaLocalSelected.setFechaCierre(fechaAlta);
+                // actualizo
+                guiaLocalClient = new GuiaLocalClient(provinciaSelected.getUrl());
+                responseCgl = guiaLocalClient.edit_JSON(guiaLocalSelected, String.valueOf(guiaLocalSelected.getId()));
+                guiaLocalClient.close();
+                // respondo según el mensaje recibido
+                if(responseCgl.getStatus() == 200){
+                    // si el origen tiene configurado correo, comunico el cierre de la Guía
+                    if(guiaLocalSelected.getOrigen().getEmail() != null){
+                        if(!enviarCorreo()){
+                            JsfUtil.addErrorMessage("No se pudo enviar el mensaje de confirmación al Titular de la Guía emitida.");
                         }
+                    }
+                    // busco la Guía en el CCV
+                    guiaCtrlClient = new GuiaCtrlClient();
+                    List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia> lstGuias;
+                    GenericType<List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia>> gTypeG = new GenericType<List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia>>() {};
+                    Response response = guiaCtrlClient.findByQuery_JSON(Response.class, guiaLocalSelected.getCodigo(), null, null);
+                    lstGuias = response.readEntity(gTypeG);
+                    guiaCtrlClient.close();
+                    if(lstGuias.get(0) != null){
+                        // si está registrada en el CCV, actualizo su estado
+                        Long idGuiaCtrl = lstGuias.get(0).getId();   
                         // instancio la Guía a editar en el CCV
                         ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia guiaCtrol = new ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia();
                         // obtengo el estado "CERRADA" del CCV
                         List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Parametrica> lstParmEstados;
                         paramCtrlClient = new ParamCtrlClient();
                         GenericType<List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Parametrica>> gTypeParam = new GenericType<List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Parametrica>>() {};
-                        response = paramCtrlClient.findByQuery_JSON(Response.class, ResourceBundle.getBundle("/Config").getString("CtrlTipoParamEstGuia"), ResourceBundle.getBundle("/Config").getString("CtrlGuiaCerrada"));
-                        lstParmEstados = response.readEntity(gTypeParam);
+                        responseCgl = paramCtrlClient.findByQuery_JSON(Response.class, ResourceBundle.getBundle("/Config").getString("CtrlTipoParamEstGuia"), ResourceBundle.getBundle("/Config").getString("CtrlGuiaCerrada"));
+                        lstParmEstados = responseCgl.readEntity(gTypeParam);
                         // solo continúo si encontré el Estado correspondiente
                         if(!lstParmEstados.isEmpty()){
                             // seteo la Guía solo con los valores que necesito para editarla
                             guiaCtrol.setId(idGuiaCtrl);
                             guiaCtrol.setEstado(lstParmEstados.get(0));
-                            response = guiaCtrlClient.edit_JSON(guiaCtrol, String.valueOf(guiaCtrol.getId()));
+                            responseCgl = guiaCtrlClient.edit_JSON(guiaCtrol, String.valueOf(guiaCtrol.getId()));
                             guiaCtrlClient.close();
-                            if(response.getStatus() == 200){
+                            if(responseCgl.getStatus() == 200){
                                 // se completaron todas las operaciones
                                 JsfUtil.addSuccessMessage("La Guía se cerró correctamente y se actualizaron los Componentes de Gestión local y Cotrol y Verificación.");
-                                // limpio todo
-                                prepareList();
-                                // recargo las Guías pendientes
-                                cargarGuiasLocales();
                             }else{
                                 // se cerró en CGL pero no actualizó en CCV
                                 JsfUtil.addErrorMessage("La Guía se cerró correctamente y se actualizó el Componente de Gestión local, pero hubo un error actualizando el Componente de Control y Verificación. Deberá contactar al Administrador.");
@@ -357,14 +351,20 @@ public class MbGuiaCierre implements Serializable{
                             // se cerró en CGL pero no hubo estado "CERRADA", por lo tanto, no actualizó en CCV
                             JsfUtil.addErrorMessage("La Guía se cerró correctamente y se actualizó el Componente de Gestión local, pero no se obtuvo el estado 'CERRADA' de la Guía en el Componente de Control y Verificación. Deberá contactar al Administrador.");
                         }
-                    }else{
-                        // no actualizó en CGL ni en el CCV
-                        JsfUtil.addErrorMessage("La Guía se cerró correctamente pero no se pudieron actualizar los Componentes de Gestión local y Control y Verificación. Deberá contactar al Administrador.");
                     }
+                    
+                    // si no se encontró la Guía en el CCV, se asume que es de tipo acopio interno y limpio todo
+                    prepareList();
+                    // recargo las Guías pendientes
+                    cargarGuiasLocales();                    
+                    
                 }else{
-                    // no obtuvo el estado, no actualizo en ninguno de los componentes, comunico el error
-                    JsfUtil.addErrorMessage("La Guía se cerró pero no se pudo obtener el Estado de la Guía correspondiente para su cierre en el Sistema de Gestión local ni se actualizó el Componente de Control y Verificación. Deberá contactar al Administrador.");
+                    // no actualizó la Guía en CGL
+                    JsfUtil.addErrorMessage("La Guía se cerró correctamente pero no se pudo actualizar el Componente de Gestión local. Deberá contactar al Administrador.");
                 }
+            }else{
+                // no obtuvo el estado, no actualizo en ninguno de los componentes, comunico el error
+                JsfUtil.addErrorMessage("La Guía se cerró pero no se pudo obtener el Estado de la Guía correspondiente para su cierre en el Sistema de Gestión local ni se actualizó el Componente de Control y Verificación. Deberá contactar al Administrador.");
             }
         }catch(ClientErrorException ex){
             JsfUtil.addErrorMessage("Hubo un error aceptando la Guía. " + ex.getMessage());
