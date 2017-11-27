@@ -321,7 +321,6 @@ public class MbGuiaCierre implements Serializable{
                     GenericType<List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia>> gTypeG = new GenericType<List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia>>() {};
                     Response response = guiaCtrlClient.findByQuery_JSON(Response.class, guiaLocalSelected.getCodigo(), null, null);
                     lstGuias = response.readEntity(gTypeG);
-                    guiaCtrlClient.close();
                     if(lstGuias.get(0) != null){
                         // si está registrada en el CCV, actualizo su estado
                         Long idGuiaCtrl = lstGuias.get(0).getId();   
@@ -339,7 +338,6 @@ public class MbGuiaCierre implements Serializable{
                             guiaCtrol.setId(idGuiaCtrl);
                             guiaCtrol.setEstado(lstParmEstados.get(0));
                             responseCgl = guiaCtrlClient.edit_JSON(guiaCtrol, String.valueOf(guiaCtrol.getId()));
-                            guiaCtrlClient.close();
                             if(responseCgl.getStatus() == 200){
                                 // se completaron todas las operaciones
                                 JsfUtil.addSuccessMessage("La Guía se cerró correctamente y se actualizaron los Componentes de Gestión local y Cotrol y Verificación.");
@@ -352,6 +350,7 @@ public class MbGuiaCierre implements Serializable{
                             JsfUtil.addErrorMessage("La Guía se cerró correctamente y se actualizó el Componente de Gestión local, pero no se obtuvo el estado 'CERRADA' de la Guía en el Componente de Control y Verificación. Deberá contactar al Administrador.");
                         }
                     }
+                    guiaCtrlClient.close();
                     
                     // si no se encontró la Guía en el CCV, se asume que es de tipo acopio interno y limpio todo
                     prepareList();
