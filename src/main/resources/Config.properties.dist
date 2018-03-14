@@ -6,6 +6,17 @@ UrlEspecies=/especiesVegetales/rest
 UrlEntidades=/rue/rest
 UrlCtrlVerif=/ctrlVerif/rest
 
+# Usuarios de acceso a API's REST:
+# UsRestTax y UsRestTerr => sacvefor (para los servicios de taxonomías y territorial)
+# UsRestRue => scvf-traz (para el RUE)
+# UsRestCtrl => scvf-ctrl (para CTRL)
+UsRestTax=sacvefor
+UsRestTerr=sacvefor
+UsRestRue=admin [Provincia]
+UsRestCtrl=scvf-ctrl
+# Tiempo de vigencia del token recibido
+TimeToken=3600000
+
 # Claves para encriptar y desencriptar las contraseñas de los usurios
 ClaveEncriptar=bosquesnativosycomunidad
 ClaveDesencriptar=trazabilidad

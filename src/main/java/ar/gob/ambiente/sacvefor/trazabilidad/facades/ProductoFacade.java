@@ -20,23 +20,33 @@ import org.hibernate.envers.AuditReaderFactory;
 @Stateless
 public class ProductoFacade extends AbstractFacade<Producto> {
 
+    /**
+     * Variable privada: EntityManager al que se le indica la unidad de persistencia mediante la cual accederá a la base de datos
+     */
     @PersistenceContext(unitName = "sacvefor-gestionTrazabilidadPU")
     private EntityManager em;
 
+    /**
+     * Método que implementa el abstracto para la obtención del EntityManager
+     * @return EntityManager para acceder a datos
+     */ 
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
 
+    /**
+     * Constructor
+     */
     public ProductoFacade() {
         super(Producto.class);
     }
     
     /**
      * Método para validar la existencia de un Producto según su Clase y el id de la Especie en la API-TAX
-     * @param clase : Clase cuya existencia se va a validar junto con la Especie
-     * @param idEspecieTax : Identificación de la Especie en el servicio de Taxonomía API-TAX
-     * @return 
+     * @param clase ProductoClase Clase del producto cuya existencia se va a validar junto con la Especie
+     * @param idEspecieTax Long Identificación de la Especie en el servicio de Taxonomía API-TAX
+     * @return Producto producto existente
      */
     public Producto getExistente(ProductoClase clase, Long idEspecieTax) {
         List<Producto> lstProductos;
@@ -58,7 +68,7 @@ public class ProductoFacade extends AbstractFacade<Producto> {
     
     /**
      * Método sobreescrito que lista los Productos generable por el nombre vulgar de la Especie
-     * @return 
+     * @return List<Producto> listado de los productos registrados ordenados por el nombre vulgar de la especie
      */
     @Override
     public List<Producto> findAll(){
@@ -72,7 +82,7 @@ public class ProductoFacade extends AbstractFacade<Producto> {
     /**
      * Mátodo que solo devuelve los Productos habilitados ordenados por Nombre vulgar
      * Para poblar combos de selección.
-     * @return 
+     * @return List<Producto> listado de los productos registrados habilitados ordenados por el nombre vulgar de la especie
      */
     public List<Producto> getHabilitados(){
         em = getEntityManager();
@@ -85,8 +95,8 @@ public class ProductoFacade extends AbstractFacade<Producto> {
     
     /**
      * Método que devuelve todos los productos para de una misma Especie
-     * @param idEspecieTax : Id de la Especie a buscar
-     * @return 
+     * @param idEspecieTax Long Id de la Especie a buscar
+     * @return List<Producto> listado de los productos existente de la especie remitida
      */
     public List<Producto> getByEspecieLocal(Long idEspecieTax){
         em = getEntityManager();
@@ -101,9 +111,9 @@ public class ProductoFacade extends AbstractFacade<Producto> {
     
     /**
      * Método para obtener todas las revisiones de la entidad
-     * @param clase : Clase que junto a la Especie definen el Producto cuyas revisiones se busca
-     * @param idEspecieTax : Identificación de la Especie cuyo Productos se buscan
-     * @return 
+     * @param clase ProductoClase Clase que junto a la Especie definen el Producto cuyas revisiones se busca
+     * @param idEspecieTax Long Identificación de la Especie cuyo Productos se buscan
+     * @return List<Producto> listado de las revisiones del producto remitido
      */
     public List<Producto> findRevisions(ProductoClase clase, Long idEspecieTax){  
         List<Producto> lstProductos = new ArrayList<>();

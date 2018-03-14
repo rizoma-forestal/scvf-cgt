@@ -8,7 +8,6 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,17 +34,21 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 public class Cuenta implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    /**
+     * Variable privada: Identificador único
+     */  
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     /**
-     * Identificación de la Persona en el servicio de registro único de entidades (RUE)
+     * Variable privada: Identificación de la Persona en el servicio de registro único de entidades (RUE)
      */
     private Long idRue;
     
     /**
-     * Nombre completo del Productor si es física o razón social si es jurídica
+     * Variable privada: Nombre completo del Productor si es física o razón social si es jurídica
      */
     @Column (nullable=false, length=100)
     @NotNull(message = "El campo nombreCompleto no puede ser nulo")
@@ -53,7 +56,7 @@ public class Cuenta implements Serializable {
     private String nombreCompleto;
     
     /**
-     * Tipo de persona:
+     * Variable privada: Tipo de persona:
      * Física
      * Jurídica
      */
@@ -63,12 +66,12 @@ public class Cuenta implements Serializable {
     private String tipoPersona;
     
     /**
-     * Cuit del Productor
+     * Variable privada: Cuit del Productor
      */
     private Long cuit;
     
     /**
-     * Indica la Calle del domicilio del Titular de la cuenta
+     * Variable privada: Calle del domicilio del Titular de la cuenta
      * Cacheada del RUE.
      */
     @Column (nullable=false, length=50)
@@ -77,7 +80,7 @@ public class Cuenta implements Serializable {
     private String domCalle;
     
     /**
-     * Indica el número de puerta del domicilio del Titular de la cuenta
+     * Variable privada: número de puerta del domicilio del Titular de la cuenta
      * Cacheada del RUE.
      */
     @Column (nullable=false, length=20)
@@ -86,7 +89,7 @@ public class Cuenta implements Serializable {
     private String domNumero;
     
     /**
-     * Indica la identificación del piso del domicilio del Titular de la cuenta, si correspondiera
+     * Variable privada: identificación del piso del domicilio del Titular de la cuenta, si correspondiera
      * Cacheada del RUE.
      */
     @Column (length=10) 
@@ -94,7 +97,7 @@ public class Cuenta implements Serializable {
     private String domPiso;
     
     /**
-     * Indica la identificación del departamento del domicilio del Titular de la cuenta, si correspondiera
+     * Variable privada: identificación del departamento del domicilio del Titular de la cuenta, si correspondiera
      * Cacheada del RUE.
      */
     @Column (length=20) 
@@ -102,27 +105,27 @@ public class Cuenta implements Serializable {
     private String domDepto;
     
     /**
-     * Identificación de la Localidad en el servicio de gestión territorial
+     * Variable privada: Identificación de la Localidad en el servicio de gestión territorial
      */
     private Long idLocGT;  
     
     /**
-     * Nombre de la Localidad en la que está domiciliado el Titular de la Cuenta
+     * Variable privada: Nombre de la Localidad en la que está domiciliado el Titular de la Cuenta
      */
     private String localidad;
 
     /**
-     * Nombre del Departamento en el que está domiciliado el Titular de la Cuenta
+     * Variable privada: Nombre del Departamento en el que está domiciliado el Titular de la Cuenta
      */    
     private String departamento;
     
     /**
-     * Nombre de la Provincia en la que está domiciliado el Titular de la Cuenta
+     * Variable privada: Nombre de la Provincia en la que está domiciliado el Titular de la Cuenta
      */  
     private String provincia;
     
     /**
-     * En los casos en que la Entidad transformadora dispusiera de Depósito
+     * Variable privada: En los casos en que la Entidad transformadora dispusiera de Depósito
      * Se persiste en casacada
      */
     @Audited(targetAuditMode = NOT_AUDITED)
@@ -131,20 +134,20 @@ public class Cuenta implements Serializable {
     private Deposito deposito;
     
     /**
-     * Campo que muestra los Productos que pudiera generar la Entidad Transformadora titular de la Cuenta
+     * Variable privada: Productos que pudiera generar la Entidad Transformadora titular de la Cuenta
      */
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
     @JoinColumn(name = "cuenta_id", referencedColumnName = "id")
     private List<Producto> productos;      
     
     /**
-     * Fecha de registro del EntidadGuia
+     * Variable privada: Fecha de registro del EntidadGuia
      */
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date fechaAlta;    
     
     /**
-     * Usuario que gestiona la inserciones o ediciones
+     * Variable privada: Usuario que gestiona la inserciones o ediciones
      */
     @Audited(targetAuditMode = NOT_AUDITED)
     @ManyToOne
@@ -152,6 +155,9 @@ public class Cuenta implements Serializable {
     @NotNull(message = "Debe existir un Usuario")   
     private Usuario usuario;    
       
+    /**
+     * Variable privada: Estado de habilitación
+     */
     private boolean habilitado;
     
     /**

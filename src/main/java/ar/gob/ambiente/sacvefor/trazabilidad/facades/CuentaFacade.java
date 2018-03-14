@@ -19,22 +19,32 @@ import org.hibernate.envers.AuditReaderFactory;
 @Stateless
 public class CuentaFacade extends AbstractFacade<Cuenta> {
 
+    /**
+     * Variable privada: EntityManager al que se le indica la unidad de persistencia mediante la cual accederá a la base de datos
+     */
     @PersistenceContext(unitName = "sacvefor-gestionTrazabilidadPU")
     private EntityManager em;
 
+    /**
+     * Método que implementa el abstracto para la obtención del EntityManager
+     * @return EntityManager para acceder a datos
+     */ 
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
 
+    /**
+     * Constructor
+     */
     public CuentaFacade() {
         super(Cuenta.class);
     }
     
     /**
      * Metodo para validar una Cuenta existente según su cuit
-     * @param cuit
-     * @return 
+     * @param cuit Long cuit del titular de la cuenta
+     * @return Cuenta cuenta solicitada
      */
     public Cuenta getExistente(Long cuit){
         List<Cuenta> lstCuentas;
@@ -54,7 +64,7 @@ public class CuentaFacade extends AbstractFacade<Cuenta> {
     
     /**
      * Método sobreescrito que lista las Cuentas ordenadas por nombre completo
-     * @return 
+     * @return List<Cuenta> listado de las cuentas ordenadas alfabéticamente
      */
     @Override
     public List<Cuenta> findAll(){
@@ -68,8 +78,8 @@ public class CuentaFacade extends AbstractFacade<Cuenta> {
     /**
      * Método para obtener un listado de Cuentas cuyo nombre completo 
      * (o Razón social) contenga la cadena recibida como parámetro
-     * @param param : Cadena que deberá contener el nombr completo o razón social del Titular
-     * @return 
+     * @param param String Cadena que deberá contener el nombr completo o razón social del Titular
+     * @return List<Cuenta> listado de las cuentas solicitadas
      */
     public List<Cuenta> findByNombreCompeto(String param){
         em = getEntityManager();
@@ -84,8 +94,8 @@ public class CuentaFacade extends AbstractFacade<Cuenta> {
     
     /**
      * Método para buscar una Cuenta habilitada según su CUIT
-     * @param cuit : Cuit a buscar
-     * @return 
+     * @param cuit Long Cuit del titular de la cuenta a buscar
+     * @return Cuenta cuenta solicitada
      */
     public Cuenta findByCuit(Long cuit){
         List<Cuenta> lstCuentas;
@@ -104,10 +114,10 @@ public class CuentaFacade extends AbstractFacade<Cuenta> {
     }     
     
     /**
-     * Método que retorna verdadero si hay una cuenta para el CUIT recibido
+     * Método que retorna verdadero si hay una cuenta para el titular con el CUIT recibido
      * o falso si no la hay.
-     * @param cuit
-     * @return 
+     * @param cuit Long cuit del titular de la cuenta
+     * @return boolean true o false según el caso
      */
     public boolean existeCuenta(Long cuit){
         List<Cuenta> lstCuentas;
@@ -122,8 +132,8 @@ public class CuentaFacade extends AbstractFacade<Cuenta> {
     
     /**
      * Método para obtener todas las revisiones de la entidad
-     * @param cuit : Cuit del Titular de la Cuenta de la que se quieren ver sus revisiones
-     * @return 
+     * @param cuit Long Cuit del Titular de la Cuenta de la que se quieren ver sus revisiones
+     * @return List<Cuenta> listado de las revisiones de la cuenta cuyo cuit se remitió
      */
     public List<Cuenta> findRevisions(Long cuit){  
         List<Cuenta> lstCuentas = new ArrayList<>();

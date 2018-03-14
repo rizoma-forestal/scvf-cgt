@@ -19,22 +19,32 @@ import org.hibernate.envers.AuditReaderFactory;
 @Stateless
 public class TransportistaFacade extends AbstractFacade<Transportista> {
 
+    /**
+     * Variable privada: EntityManager al que se le indica la unidad de persistencia mediante la cual accederá a la base de datos
+     */
     @PersistenceContext(unitName = "sacvefor-gestionTrazabilidadPU")
     private EntityManager em;
 
+    /**
+     * Método que implementa el abstracto para la obtención del EntityManager
+     * @return EntityManager para acceder a datos
+     */
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
 
+    /**
+     * Constructor
+     */
     public TransportistaFacade() {
         super(Transportista.class);
     }
     
     /**
      * Metodo para validar un Transportista existente según su cuit
-     * @param cuit : Cuit a validar
-     * @return 
+     * @param cuit Long Cuit a validar
+     * @return Transportista transportista con el cuit solicitado
      */
     public Transportista getExistente(Long cuit) {
         List<Transportista> lstTransp;
@@ -55,8 +65,8 @@ public class TransportistaFacade extends AbstractFacade<Transportista> {
     /**
      * Método para obtener un Transportista a partir del id del Registro Unico de Entidades del SACVeFor.
      * No debería haber dos Transportistas con el mismo idRue.
-     * @param idRue : id de la Transportista en el RUE
-     * @return 
+     * @param idRue Long id de la Transportista en el RUE
+     * @return Transportista correspondientes a la Persona cuyo id se remite
      */
     public Transportista getByIdRue(Long idRue){
         List<Transportista> lstPersonas;
@@ -76,7 +86,7 @@ public class TransportistaFacade extends AbstractFacade<Transportista> {
     
     /**
      * Método sobreescrito que lista los Transportistas ordenados por nombre completo
-     * @return 
+     * @return List<Transportista> listado de los transportistas ordenados por su nombre completo
      */
     @Override
     public List<Transportista> findAll(){
@@ -89,7 +99,7 @@ public class TransportistaFacade extends AbstractFacade<Transportista> {
     
     /**
      * Método que devuelve todos los Transportistas habilitados
-     * @return 
+     * @return List<Transportista> listado de los transportistas habilitados ordenados por su nombre completo
      */
     public List<Transportista> getHabilitados(){
         em = getEntityManager();
@@ -103,8 +113,8 @@ public class TransportistaFacade extends AbstractFacade<Transportista> {
     /**
      * Método para obtener un listado de los Transportistas cuyo nombre completo 
      * (o Razón social) contenga la cadena recibida como parámetro
-     * @param param : Cadena que deberá contener el nombr completo o razón social de la Persona
-     * @return 
+     * @param param String Cadena que deberá contener el nombre completo o razón social de la Persona
+     * @return List<Transportista> listado de los transportistas correspondientes al nombre remitido
      */
     public List<Transportista> findByNombreCompeto(String param){
         em = getEntityManager();
@@ -119,8 +129,8 @@ public class TransportistaFacade extends AbstractFacade<Transportista> {
     
     /**
      * Método para obtener todas las revisiones de la entidad
-     * @param cuit : Cuit del Transportista del que se quieren ver sus revisiones
-     * @return 
+     * @param cuit Long Cuit del Transportista del que se quieren ver sus revisiones
+     * @return List<Transportista> listado de las revisiones del transportista remitido
      */
     public List<Transportista> findRevisions(Long cuit){  
         List<Transportista> lstTransp = new ArrayList<>();

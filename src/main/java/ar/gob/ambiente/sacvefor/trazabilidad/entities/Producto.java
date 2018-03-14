@@ -32,18 +32,22 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 public class Producto implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    /**
+     * Variable privada: Identificador único
+     */  
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     /**
-     * Identificación de la Especie del Producto en el servicio de Taxonomía
+     * Variable privada: Identificación de la Especie del Producto en el servicio de Taxonomía
      * cacheado 
      */
     private Long idEspecieTax;
     
     /**
-     * El código origen encapsula los atributos del Producto de origen separados por '|' en este orden
+     * Variable privada: código origen encapsula los atributos del Producto de origen separados por '|' en este orden
      * nombreCientifico: nombre científico de la Especie constituido por 'Género/Especie'
      * nombreVulgar: nombre vulgar de la Especie definido de manera local
      * clase: clase en la que se comercializa el Producto definido de manera local
@@ -56,7 +60,7 @@ public class Producto implements Serializable {
     private String codigoOrigen;
     
     /**
-     * Nombre científico de la Especie del Producto obtenido del Servicio de Taxonomía
+     * Variable privada: Nombre científico de la Especie del Producto obtenido del Servicio de Taxonomía
      */
     @Column (nullable=false, length=100, unique=true)
     @NotNull(message = "El campo nombreCientifico no puede ser nulo")
@@ -64,7 +68,7 @@ public class Producto implements Serializable {
     private String nombreCientifico;
     
     /**
-     * Nombre vulgar de la Especie en el ámbito de la Entidad Transformadora
+     * Variable privada: Nombre vulgar de la Especie en el ámbito de la Entidad Transformadora
      * ingresado al momento de registrar. Editable
      */
     @Column (nullable=false, length=50, unique=true)
@@ -73,7 +77,7 @@ public class Producto implements Serializable {
     private String nombreVulgar;     
     
     /**
-     * Clase en la que se comercializa el Producto transformado
+     * Variable privada: Clase en la que se comercializa el Producto transformado
      * No será auditada
      */
     @Audited(targetAuditMode = NOT_AUDITED)
@@ -83,27 +87,30 @@ public class Producto implements Serializable {
     private ProductoClase clase;
     
     /**
-     * Factor de transformación del Producto de su estado primario
+     * Variable privada: Factor de transformación del Producto de su estado primario
      * al estado transformado, será menor de 1
      */
     private float factorTransformacion;
     
     /**
-     * Equivalencia en Kg. de la Unidad de medida de la Clase del Producto
+     * Variable privada: Equivalencia en Kg. de la Unidad de medida de la Clase del Producto
      */
     private float equivalKg;
     
     /**
-     * Listado de los SubProductos obtenibles mediante a partir de la realización del Producto
+     * Variable privada: Listado de los SubProductos obtenibles mediante a partir de la realización del Producto
      */
     @OneToMany (mappedBy="producto")
     private List<SubProducto> supProductos;     
     
+    /**
+     * Variable privada: Fecha de registro del Producto
+     */      
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date fechaAlta;
     
     /**
-     * Usuario que registró el Producto, también registrado en las auditorías.
+     * Variable privada: Usuario que registró el Producto, también registrado en las auditorías.
      * No será auditado
      */
     @Audited(targetAuditMode = NOT_AUDITED)
@@ -112,10 +119,13 @@ public class Producto implements Serializable {
     @NotNull(message = "Debe existir un Usuario")  
     private Usuario usuario;   
     
+    /**
+     * Variable privada: Estado de habilitación
+     */
     private boolean habilitado;
     
     /**
-     * Campo que mostrará la fecha de las revisiones
+     * Variable privada: Campo que mostrará la fecha de las revisiones
      * No se persiste
      */
     @Transient

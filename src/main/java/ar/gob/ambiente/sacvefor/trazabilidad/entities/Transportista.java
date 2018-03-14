@@ -30,17 +30,21 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 public class Transportista implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    /**
+     * Variable privada: Identificador único
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     /**
-     * Identificación de la Persona en el servicio de registro único de entidades (RUE)
+     * Variable privada: Identificación de la Persona en el servicio de registro único de entidades (RUE)
      */    
     private Long idRue;
     
     /**
-     * Nombre completo o razón social de la persona, cacheado del servicio del RUE
+     * Variable privada: Nombre completo o razón social de la persona, cacheado del servicio del RUE
      */
     @Column (nullable=false, length=100)
     @NotNull(message = "El campo nombreCompleto no puede ser nulo")
@@ -48,29 +52,30 @@ public class Transportista implements Serializable {
     private String nombreCompleto;
     
     /**
-     * CUIT cacheado el RUE
+     * Variable privada: CUIT cacheado el RUE
      */
     private Long cuit;
 
     /**
-     * Tipo de Persona: Jurídica o Física
+     * Variable privada: Tipo de Persona: 
+     * Jurídica o Física
      */
     private String tipoPersona;
     
     /**
-     * Listado de las Copias a imprimir de la Guía
+     * Variable privada: Listado de las Copias a imprimir de la Guía
      */
     @OneToMany (mappedBy="titular")
     private List<Vehiculo> vehiculos;      
     
     /**
-     * Fecha de alta de la Persona
+     * Variable privada: Fecha de alta de la Persona
      */
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date fechaAlta;
 
     /**
-     * Usuario que gestiona la inserciones o ediciones
+     * Variable privada: Usuario que gestiona la inserciones o ediciones
      */
     @Audited(targetAuditMode = NOT_AUDITED)
     @ManyToOne
@@ -79,14 +84,14 @@ public class Transportista implements Serializable {
     private Usuario usuario;
     
     /**
-     * Condición de habilitado de la Persona
+     * Variable privada: Condición de habilitado de la Persona
      */
     private boolean habilitado;
     
     /**
-     * Campo que mostrará la fecha de las revisiones
+     * Variable privada: Campo que mostrará la fecha de las revisiones
      * No se persiste
-     */    
+     */
     @Transient
     private Date fechaRevision;      
     

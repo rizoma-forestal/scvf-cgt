@@ -7,7 +7,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 
 /**
- * Jersey REST client generated for REST resource:ParametricaFacadeREST
+ * Cliente REST Jersey generado para el recurso ParametricaFacadeREST de la API de Control y Verificación<br>
  * [parametricas]<br>
  * USAGE:
  * <pre>
@@ -21,11 +21,26 @@ import javax.ws.rs.client.WebTarget;
  */
 public class ParamCtrlClient {
 
+    /**
+     * Variable privada: WebTarget path de acceso a la API de Control y Verificación
+     */
     private WebTarget webTarget;
+    
+    /**
+     * Variable privada: Client cliente a setear a partir de webTarget
+     */
     private Client client;
+    
+    /**
+     * Variable privada estática y final: String url general de acceso al servicio.
+     * A partir de datos configurados en archivo de propiedades
+     */
     private static final String BASE_URI = ResourceBundle.getBundle("/Config").getString("ServerServicios") + "/"
             + "" + ResourceBundle.getBundle("/Config").getString("UrlCtrlVerif");
 
+    /**
+     * Constructor que instancia el cliente y el webTarget
+     */
     public ParamCtrlClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("parametricas");
@@ -37,6 +52,19 @@ public class ParamCtrlClient {
         return resource.request(javax.ws.rs.core.MediaType.TEXT_PLAIN).get(String.class);
     }
 
+    /**
+     * Método para obtener uno o más Paramétricas según un parámetro que podrá ser el tipo de paramétrica, 
+     * o su nombre. Solo se podrá pasar el valor de un parámetro, los restantes deberán ser nulos.
+     * En formato XML
+     * GET /parametricas/query?tipoParam=:tipoParam
+     * GET /parametricas/query?nombre=:nombre
+     * @param <T> Tipo genérico
+     * @param responseType Tipo que en el que se setearán los datos serializados obtenidos, en este caso será Parametrica
+     * @param tipoParam String nombre del tipo de paramétrica/s buscada/s
+     * @param nombre String Nombre de la Paramétrica buscada
+     * @return Parametrica paramétrica o paramétricas obtenida/s según los parámetros enviados
+     * @throws ClientErrorException Excepcion a ejecutar
+     */    
     public <T> T findByQuery_XML(Class<T> responseType, String tipoParam, String nombre) throws ClientErrorException {
         WebTarget resource = webTarget;
         if (nombre != null) {
@@ -46,6 +74,19 @@ public class ParamCtrlClient {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
+    /**
+     * Método para obtener uno o más Paramétricas según un parámetro que podrá ser el tipo de paramétrica, 
+     * o su nombre. Solo se podrá pasar el valor de un parámetro, los restantes deberán ser nulos.
+     * En formato JSON
+     * GET /parametricas/query?tipoParam=:tipoParam
+     * GET /parametricas/query?nombre=:nombre
+     * @param <T> Tipo genérico
+     * @param responseType Tipo que en el que se setearán los datos serializados obtenidos, en este caso será Parametrica
+     * @param tipoParam String nombre del tipo de paramétrica/s buscada/s
+     * @param nombre String Nombre de la Paramétrica buscada
+     * @return Parametrica paramétrica o paramétricas obtenida/s según los parámetros enviados
+     * @throws ClientErrorException Excepcion a ejecutar
+     */ 
     public <T> T findByQuery_JSON(Class<T> responseType, String tipoParam, String nombre) throws ClientErrorException {
         WebTarget resource = webTarget;
         if (nombre != null) {
@@ -55,12 +96,30 @@ public class ParamCtrlClient {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
+    /**
+     * Método que obtiene una Paramétrica registrada habilitada según su id en formato XML
+     * GET /parametricas/:id
+     * @param <T> Tipo genérico
+     * @param responseType Entidad en la que se setearán los datos serializados obtenidos, en este caso será Parametrica
+     * @param id String id de la Parametrica a obtener
+     * @return <T> Parametrica paramétrica obtenida según el id remitido
+     * @throws ClientErrorException Excepcion a ejecutar
+     */
     public <T> T find_XML(Class<T> responseType, String id) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
+    /**
+     * Método que obtiene una Paramétrica registrada habilitada según su id en formato JSON
+     * GET /parametricas/:id
+     * @param <T> Tipo genérico
+     * @param responseType Entidad en la que se setearán los datos serializados obtenidos, en este caso será Parametrica
+     * @param id String id de la Parametrica a obtener
+     * @return <T> Parametrica paramétrica obtenida según el id remitido
+     * @throws ClientErrorException Excepcion a ejecutar
+     */
     public <T> T find_JSON(Class<T> responseType, String id) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
@@ -79,18 +138,36 @@ public class ParamCtrlClient {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
+    /**
+     * Método que obtiene todos las guías registradas en formato XML
+     * GET /parametricas
+     * @param <T> Tipo genérico
+     * @param responseType javax.ws.rs.core.Response
+     * @return javax.ws.rs.core.Response resultados de la consulta
+     * @throws ClientErrorException Excepcion a ejecutar
+     */ 
     public <T> T findAll_XML(Class<T> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
+    /**
+     * Método que obtiene todos las guías registradas en formato JSON
+     * GET /parametricas
+     * @param <T> Tipo genérico
+     * @param responseType javax.ws.rs.core.Response
+     * @return javax.ws.rs.core.Response resultados de la consulta
+     * @throws ClientErrorException Excepcion a ejecutar
+     */
     public <T> T findAll_JSON(Class<T> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
+    /**
+     * Método para cerrar el cliente
+     */  
     public void close() {
         client.close();
     }
-    
 }

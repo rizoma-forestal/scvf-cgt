@@ -15,22 +15,32 @@ import javax.persistence.Query;
 @Stateless
 public class TipoGuiaFacade extends AbstractFacade<TipoGuia> {
 
+    /**
+     * Variable privada: EntityManager al que se le indica la unidad de persistencia mediante la cual accederá a la base de datos
+     */
     @PersistenceContext(unitName = "sacvefor-gestionTrazabilidadPU")
     private EntityManager em;
 
+    /**
+     * Método que implementa el abstracto para la obtención del EntityManager
+     * @return EntityManager para acceder a datos
+     */
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
 
+    /**
+     * Constructor
+     */
     public TipoGuiaFacade() {
         super(TipoGuia.class);
     }
     
     /**
      * Método para validar la existencia de un TipoGuia en función de su nombre
-     * @param nombre : Nombre del TipoGuia a validar
-     * @return 
+     * @param nombre String Nombre del TipoGuia a validar
+     * @return TipoGuia Tipo de guía existente
      */
     public TipoGuia getExistente(String nombre) {
         List<TipoGuia> lstTipos;
@@ -50,7 +60,7 @@ public class TipoGuiaFacade extends AbstractFacade<TipoGuia> {
     
     /**
      * Método sobreescrito que lista los EstadoGuia ordenadas por nombre
-     * @return 
+     * @return List<TipoGuia> listado de los tipos de guía ordenados por su nombre
      */
     @Override
     public List<TipoGuia> findAll(){
@@ -63,7 +73,7 @@ public class TipoGuiaFacade extends AbstractFacade<TipoGuia> {
     
     /**
      * Método que devuelve todos los tipos de Guía habilitados
-     * @return 
+     * @return List<TipoGuia> listado de los tipos de guía habilitados ordenados por su nombre
      */
     public List<TipoGuia> getHabilitados(){
         em = getEntityManager();

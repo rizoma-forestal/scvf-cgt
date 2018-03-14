@@ -1,6 +1,7 @@
 
 package ar.gob.ambiente.sacvefor.trazabilidad.service;
 
+import ar.gob.ambiente.sacvefor.trazabilidad.annotation.Secured;
 import ar.gob.ambiente.sacvefor.trazabilidad.entities.Parametrica;
 import ar.gob.ambiente.sacvefor.trazabilidad.entities.TipoParam;
 import ar.gob.ambiente.sacvefor.trazabilidad.entities.Usuario;
@@ -26,6 +27,8 @@ import javax.ws.rs.core.UriInfo;
 
 /**
  * Servicio que implementa los métodos expuestos por la API REST para la entidad Parametrica
+ * En este caso específico, se tratarán las paramétricas de tipo Rol de usuarios.
+ * De modo que el término "paramétrica" puede interpretarse como "rol de usuarios".
  * @author rincostante
  */
 @Stateless
@@ -39,13 +42,48 @@ public class ParametricaFacadeREST {
     
     @Context
     UriInfo uriInfo;        
-    
+
     /**
-     * Método para crear una Parametrica.
-     * @param entity: La Parametrica a persistir
-     * @return : Un código de respuesta (201) con la uri de acceso a la Entidad creada o un código de error (400)
-     */     
+     * @api {post} /parametricas Registrar una Paramétrica
+     * @apiExample {curl} Ejemplo de uso:
+     *     curl -X POST -d [PATH_SERVER]/rue/rest/parametricas -H "authorization: xXyYvWzZ"
+     * @apiVersion 1.0.0
+     * @apiName PostParametrica
+     * @apiGroup Parametrica
+     * @apiHeader {String} Authorization Token recibido al autenticar el usuario
+     * @apiHeaderExample {json} Ejemplo de header:
+     *     {
+     *       "Authorization": "xXyYvWzZ"
+     *     } 
+     * @apiParam {ar.gob.ambiente.sacvefor.servicios.trazabilidad.Parametrica} entity Objeto java del paquete paqRue.jar con los datos de la paramétrica a registrar
+     * @apiParamExample {java} Ejemplo de Parametrica
+     *      {"entity": {
+     *          "id": "0",
+     *          "nombre": "TRANSFORMADOR",
+     *          "tipo": {
+     *              "id": "1",
+     *              "nombre": "ROL_USUARIOS"
+     *          }
+     *      }
+     * @apiDescription Método para registrar una nueva Parametrica. Instancia una entidad a persistir Parametrica local y la crea mediante el método local create(Parametrica param) 
+     * @apiSuccess {String} Location url de acceso mediante GET a la Parametrica registrada.
+     * @apiSuccessExample Response exitosa:
+     *     HTTP/1.1 201 OK
+     *     {
+     *       {
+     *          "Location": "[PATH_SERVER]/rue/rest/parametricas/:id"
+     *       }
+     *     }
+     *
+     * @apiError ParametricaNoRegistrada No se registró la Parametrica.
+     * @apiErrorExample Respuesta de Error:
+     *     HTTP/1.1 400 Not Found
+     *     {
+     *       "error": "Hubo un error procesando la inserción en el Registro Unico"
+     *     }
+     */          
     @POST
+    @Secured
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response create(ar.gob.ambiente.sacvefor.servicios.trazabilidad.Parametrica entity) {
         try{
@@ -69,12 +107,47 @@ public class ParametricaFacadeREST {
     }
 
     /**
-     * Método para editar una Parametrica existente
-     * @param id : Id de la Parametrica a editar
-     * @param entity : Parametrica a editar
-     * @return : El código de repuesta que corresponda según se haya realizado o no la operación: 200 o 400
-     */        
+     * @api {put} /parametricas/:id Actualizar una paramétrica existente
+     * @apiExample {curl} Ejemplo de uso:
+     *     curl -X PUT -d [PATH_SERVER]/rue/rest/parametricas/1 -H "authorization: xXyYvWzZ"
+     * @apiVersion 1.0.0
+     * @apiName PutParametrica
+     * @apiGroup Parametrica
+     * @apiHeader {String} Authorization Token recibido al autenticar el usuario
+     * @apiHeaderExample {json} Ejemplo de header:
+     *     {
+     *       "Authorization": "xXyYvWzZ"
+     *     } 
+     * @apiParam {ar.gob.ambiente.sacvefor.servicios.trazabilidad.Parametrica} entity Objeto java del paquete paqRue.jar con los datos de la paramétrica a actualizar
+     * @apiParam {Long} Id Identificador único de la Parametrica a actualizar
+     * @apiParamExample {java} Ejemplo de Parametrica
+     *      {"entity": {
+     *          "id": "1",
+     *          "nombre": "TRANSFORMADOR",
+     *          "tipo": {
+     *              "id": "1",
+     *              "nombre": "ROL_USUARIOS"
+     *          }
+     *      }
+     * @apiParamExample {json} Emplo de id
+     *      {
+     *          "id": "1"
+     *      }
+     * @apiDescription Método para actualizar una Parametrica existente. Obtiene la Parametrica correspondiente al id recibido 
+     * mediante el método local find(Long id), actualiza sus datos según los de la entidad recibida y la edita mediante 
+     * el método local edit(Parametrica param).
+     * @apiSuccessExample Response exitosa:
+     *     HTTP/1.1 200 OK
+     *     {}
+     * @apiError ParametricaNoActualizada No se actualizó la Parametrica.
+     * @apiErrorExample Respuesta de Error:
+     *     HTTP/1.1 400 Not Modified
+     *     {
+     *       "error": "Hubo un error procesado la actualización en el Registro Unico."
+     *     }
+     */      
     @PUT
+    @Secured
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response edit(@PathParam("id") Long id, ar.gob.ambiente.sacvefor.servicios.trazabilidad.Parametrica entity) {
@@ -96,61 +169,169 @@ public class ParametricaFacadeREST {
     }
 
     /**
-     * Método para obtener la Parametrica correspondiente al id recibido
-     * Ej: [PATH]/parametricas/1
-     * @param id: id de la Parametrica a obtener
-     * @return
-     */    
+     * @api {get} /parametricas/:id Ver una Parametrica
+     * @apiExample {curl} Ejemplo de uso:
+     *     curl -X GET -d [PATH_SERVER]/rue/rest/parametricas/2 -H "authorization: xXyYvWzZ"
+     * @apiVersion 1.0.0
+     * @apiName GetParametrica
+     * @apiGroup Parametrica
+     * @apiHeader {String} Authorization Token recibido al autenticar el usuario
+     * @apiHeaderExample {json} Ejemplo de header:
+     *     {
+     *       "Authorization": "xXyYvWzZ"
+     *     } 
+     * @apiParam {Long} id Identificador único de la Parametrica
+     * @apiDescription Método para obtener una Parametrica existente según el id remitido.
+     * Obtiene la paramétrica mediante el método local find(Long id)
+     * @apiSuccess {ar.gob.ambiente.sacvefor.servicios.trazabilidad.Parametrica} Parametrica Detalle de la paramétrica registrada.
+     * @apiSuccessExample Respuesta exitosa:
+     *     HTTP/1.1 200 OK
+     *     {
+     *      {
+     *          "id": "2",
+     *          "nombre": "ACOPIADOR",
+     *          "tipo": {
+     *              "id": "1",
+     *              "nombre": "ROL_USUARIOS"
+     *          }
+     *      }
+     *     }
+     * @apiError ParametricaNotFound No existe paramétrica registrada con ese id.
+     * @apiErrorExample Respuesta de error:
+     *     HTTP/1.1 400 Not Found
+     *     {
+     *       "error": "No hay paramétrica registrada con el id recibido"
+     *     }
+     */           
     @GET
     @Path("{id}")
+    @Secured
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Parametrica find(@PathParam("id") Long id) {
         return paramFacade.find(id);
     }
 
     /**
-     * Método que retorna todos las Parametricas registradas
-     * Ej: [PATH]/parametricas
-     * @return 
-     */     
+     * @api {get} /parametricas Ver todas las Parametricas
+     * @apiExample {curl} Ejemplo de uso:
+     *     curl -X GET -d [PATH_SERVER]/rue/rest/parametricas -H "authorization: xXyYvWzZ"
+     * @apiVersion 1.0.0
+     * @apiName GetParametricas
+     * @apiGroup Parametrica
+     * @apiHeader {String} Authorization Token recibido al autenticar el usuario
+     * @apiHeaderExample {json} Ejemplo de header:
+     *     {
+     *       "Authorization": "xXyYvWzZ"
+     *     } 
+     * @apiDescription Método para obtener un listado de las Parametricas existentes.
+     * Obtiene las paramétricas mediante el método local findAll()
+     * @apiSuccess {ar.gob.ambiente.sacvefor.servicios.trazabilidad.Parametrica} Parametricas Listado con todas las Parametricas registradas.
+     * @apiSuccessExample Respuesta exitosa:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "parametricas": [
+     *          {"id": "1",
+     *          "nombre": "TRANSFORMADOR",
+     *          "tipo": {
+     *              "id": "1",
+     *              "nombre": "ROL_USUARIOS"
+     *          },
+     *          {"id": "2",
+     *          "nombre": "ACOPIADOR",
+     *          "tipo": {
+     *              "id": "1",
+     *              "nombre": "ROL_USUARIOS",
+     *          }
+     *       ]
+     *     }
+     * @apiError ParametricasNotFound No existen paramétricas registradas.
+     * @apiErrorExample Respuesta de error:
+     *     HTTP/1.1 400 Not Found
+     *     {
+     *       "error": "No hay paramétricas registradas"
+     *     }
+     */      
     @GET
+    @Secured
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Parametrica> findAll() {
         return paramFacade.findAll();
     }
 
     /**
-     * Método que devuelve todos los Usuarios correspondientes al Rol (Paramétrica) cuyo id se recibe como parámetro
-     * Ej: [PATH]/parametricas/1/usuarios
-     * @param id
-     * @return 
-     */
+     * @api {get} /parametricas/:id/usuarios Ver las paramétricas
+     * @apiExample {curl} Ejemplo de uso:
+     *     curl -X GET -d [PATH_SERVER]/rue/rest/parametricas/2/usuarios -H "authorization: xXyYvWzZ"
+     * @apiVersion 1.0.0
+     * @apiName GetUsuarios
+     * @apiGroup Parametrica
+     * @apiHeader {String} Authorization Token recibido al autenticar el usuario
+     * @apiHeaderExample {json} Ejemplo de header:
+     *     {
+     *       "Authorization": "xXyYvWzZ"
+     *     } 
+     * @apiParam {Long} id Identificador de la Parametrica cuyos Usuarios se quiere obtener
+     * @apiDescription Método para obtener los Usuarios asociados a una Parametrica existente según el id remitido.
+     * Obtiene los usuarios mediante el método local getUsuariosByRol(Long id)
+     * @apiSuccess {ar.gob.ambiente.sacvefor.servicios.trazabilidad.Parametrica} Usuario Listado de los Usuarios registrados vinculados a la Parametrica cuyo id se recibió.
+     * @apiSuccessExample Respuesta existosa:
+     *     HTTP/1.1 200 OK
+     *     {
+     *      "Usuarios": [
+     *          {"id": "1",
+     *          "email": "usuario_1@correo.com",
+     *          "jurisdiccion": "CATAMARCA",
+     *          "login": "27457740609",
+     *          "nombrecompleto": "PEREZ, JUAN",
+     *          "rol":{
+     *              "id": "1",
+     *              "nombre": "TRANSFORMADOR",
+     *              "tipo": {
+     *                  "id": "1",
+     *                  "nombre": "ROL_USUARIOS"
+     *                  }
+     *              }
+     *          },
+     *          {"id": "2",
+     *          "email": "usuario_2@correo.com",
+     *          "jurisdiccion": "RIO NEGRO",
+     *          "login": "27455506013",
+     *          "nombrecompleto": "LOPEZ, JOSE",
+     *          "rol":{
+     *              "id": "1",
+     *              "nombre": "ACOPIADOR",
+     *              "tipo": {
+     *                  "id": "1",
+     *                  "nombre": "ROL_USUARIOS"
+     *                  }
+     *              }
+     *          }
+     *      ]
+     *     }
+     *
+     * @apiError ModelosNotFound No existen usuarios registrados vinculados a la id de la paramétrica.
+     *
+     * @apiErrorExample Respuesta de error:
+     *     HTTP/1.1 400 Not Found
+     *     {
+     *       "error": "No hay usuarios registrados vinculados al id de la paramétrica recibida."
+     *     }
+     */         
     @GET
     @Path("{id}/usuarios")
+    @Secured
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Usuario> findUsuariosByRol(@PathParam("id") Long id){
         return paramFacade.getUsuariosByRol(id);
     }        
     
-    /**
-     * Método que obtiene un listado de Paramétricas cuyos id se encuentran entre los parámetros de inicio y fin recibidos
-     * Ej: [PATH]/parametricas/1/10
-     * @param from: parámetro 'desde' el cual se inicia el listado
-     * @param to: parámetro 'hasta' el cual se completa el listado
-     * @return 
-     */    
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Parametrica> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
         return paramFacade.findRange(new int[]{from, to});
     }
-
-    /**
-     * Método que devuelve un entero con la totalidad de las Paramétricas registradas
-     * Ej: [PATH]/parametricas/count
-     * @return 
-     */        
+    
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)

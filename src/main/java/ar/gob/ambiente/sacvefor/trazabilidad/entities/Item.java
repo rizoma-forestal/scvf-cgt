@@ -32,19 +32,23 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 public class Item implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    /**
+     * Variable privada: Identificador único
+     */  
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     /**
-     * Id de la Especie de la que se constituye el Producto, 
+     * Variable privada: Id de la Especie de la que se constituye el Producto, 
      * registrado en el Registro de Taxonomía
      */
     @Column
     private Long idEspecieTax;    
     
     /**
-     * El código origen encapsula los atributos del Producto de origen separados por '|' en este orden
+     * Variable privada: código origen encapsula los atributos del Producto de origen separados por '|' en este orden
      * nombreCientifico: nombre científico de la Especie constituido por 'Género/Especie'
      * nombreVulgar: nombre vulgar de la Especie definido de manera local
      * clase: clase en la que se comercializa el Producto definido de manera local
@@ -57,14 +61,14 @@ public class Item implements Serializable {
     private String codigoOrigen;
     
     /**
-     * Equivalencia en Kg por unidad de medida del Producto.
+     * Variable privada: Equivalencia en Kg por unidad de medida del Producto.
      * Cacheado del Producto
      */
     @Column
     private float kilosXUnidad;    
     
     /**
-     * Nombre Científico cacheado del Producto
+     * Variable privada: Nombre Científico cacheado del Producto
      * Se incluye en el código del producto trazable
      */
     @Column (nullable=false, length=100)
@@ -73,7 +77,7 @@ public class Item implements Serializable {
     private String nombreCientifico;
     
     /**
-     * Nombre vulgar cacheado del Producto
+     * Variable privada: Nombre vulgar cacheado del Producto
      * Se incluye en el código del producto trazable
      */
     @Column (nullable=false, length=50)
@@ -82,7 +86,7 @@ public class Item implements Serializable {
     private String nombreVulgar;
     
     /**
-     * Clase cacheada del Producto
+     * Variable privada: Clase cacheada del Producto
      * Se incluye en el código del producto tazable
      */
     @Column (nullable=false, length=30)
@@ -91,7 +95,7 @@ public class Item implements Serializable {
     private String clase;
     
     /**
-     * Unidad de medida cacheada del Producto
+     * Variable privada: Unidad de medida cacheada del Producto
      * Se incluye en el código del producto tazable
      */    
     @Column (nullable=false, length=30)
@@ -100,7 +104,7 @@ public class Item implements Serializable {
     private String unidad;
     
     /**
-     * Referencia al identificador del Producto.
+     * Variable privada: Referencia al identificador del Producto.
      * Si la Guía es primaria, el Producto estará registrado en el CGL de la Provincia generadora,
      * en caso contrario, estará registrado en el Componente de Trazabilidad.
      * cacheado al momento de registrar el item
@@ -109,14 +113,14 @@ public class Item implements Serializable {
     private Long idProd;
     
     /**
-     * Referencia al identificador del SubProducto, en el caso que corresponda,
+     * Variable privada: Referencia al identificador del SubProducto, en el caso que corresponda,
      * cacheado al momento de registrar el item
      */
     @Column(nullable=true) 
     private Long idSubProd;
     
     /**
-     * Para los items derivados, indica dónde fueron depositados.
+     * Variable privada: Para los items derivados, indica dónde fueron depositados.
      */
     @Audited(targetAuditMode = NOT_AUDITED)
     @ManyToOne
@@ -124,7 +128,7 @@ public class Item implements Serializable {
     private Deposito deposito;
     
     /**
-     * Paramétrica cuyo tipo es "Tipos de items" que indica el tipo de ítem actual
+     * Variable privada: Paramétrica cuyo tipo es "Tipos de items" que indica el tipo de ítem actual
      */
     @Audited(targetAuditMode = NOT_AUDITED)
     @ManyToOne
@@ -133,13 +137,13 @@ public class Item implements Serializable {
     private Parametrica tipoActual;
     
     /**
-     * Referencia del ítem del cual se originó el actual
+     * Variable privada: Referencia del ítem del cual se originó el actual
      */
     @Column 
     private Long itemOrigen;
     
     /**
-     * Paramétrica cuyo tipo es "Tipos de ïtems" que indica el tipo de ítem que originó al acutal
+     * Variable privada: Paramétrica cuyo tipo es "Tipos de ïtems" que indica el tipo de ítem que originó al acutal
      */
     @Audited(targetAuditMode = NOT_AUDITED)
     @ManyToOne
@@ -147,67 +151,66 @@ public class Item implements Serializable {
     private Parametrica tipoOrigen;
     
     /**
-     * Cantidad del Producto incluído en el item
+     * Variable privada: Cantidad del Producto incluído en el item
      * Cupo
      */
     @Column
     private float total;
     
     /**
-     * Equivalencia del total por unidad del Producto, en Kg.
+     * Variable privada: Equivalencia del total por unidad del Producto, en Kg.
      */
     @Column
     private float totalKg;
     
     /**
-     * Campo temporal que guarda el total asignado al item origen.
-     * Empleado durante la operatoria, no se persiste
+     * Variable privada no persistida: guarda el total asignado al item origen.
+     * Empleado durante la operatoria.
      */
     @Transient
     private float totalOrigen;     
     
     /**
-     * Saldo dispobible del Producto para ser descontado
+     * Variable privada: Saldo dispobible del Producto para ser descontado
      * Cupo
      */
     @Column
     private float saldo;  
     
     /**
-     * Equivalencia en Kg. del saldo disponible
+     * Variable privada: Equivalencia en Kg. del saldo disponible
      */
     @Column
     private float saldoKg;  
     
     /**
-     * Campo temporal que guarda el saldo disponible del item origen.
-     * Empleado durante la operatoria, no se persiste
+     * Variable privada no persistida: guarda el saldo disponible del item origen.
+     * Empleado durante la operatoria.
      */
     @Transient
     private float saldoOrigen;      
     
     /**
-     * Campo temporal que guarda el saldo del item mientras se va realizando la operatoria
-     * No se persiste
+     * Variable privada no persistida: guarda el saldo del item mientras se va realizando la operatoria
      */
     @Transient
     private float saldoTemp; 
 
     /**
-     * Observaciones que pudieran corresponder
+     * Variable privada: Observaciones que pudieran corresponder
      */
     @Column (length=500)
     @Size(message = "El campo obs no puede tener más de 500 caracteres", max = 500)     
     private String obs;
     
     /**
-     * Fecha de registro de la Autorización
+     * Variable privada: Fecha de registro de la Autorización
      */
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date fechaAlta;
     
     /**
-     * Usuario que gestiona la Autorización
+     * Variable privada: Usuario que gestiona la Autorización
      */
     @Audited(targetAuditMode = NOT_AUDITED)
     @ManyToOne
@@ -215,6 +218,9 @@ public class Item implements Serializable {
     @NotNull(message = "Debe existir un usuario")       
     private Usuario usuario;
 
+    /**
+     * Variable privada: Estado de habilitación
+     */
     @Column 
     private boolean habilitado;
     
@@ -226,8 +232,8 @@ public class Item implements Serializable {
     private Date fechaRevision;
     
     /**
-     * Flag temporal que indica que el item ya ha sido descontado.
-     * Para usar durante la operatoria, no se persiste
+     * Variable privada no persistida: Flag temporal que indica que el item ya ha sido descontado.
+     * Para usar durante la operatoria.
      */
     @Transient
     private boolean descontado;    

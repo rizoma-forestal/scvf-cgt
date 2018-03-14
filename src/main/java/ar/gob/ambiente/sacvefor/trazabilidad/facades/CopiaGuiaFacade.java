@@ -16,23 +16,33 @@ import javax.persistence.Query;
 @Stateless
 public class CopiaGuiaFacade extends AbstractFacade<CopiaGuia> {
 
+    /**
+     * Variable privada: EntityManager al que se le indica la unidad de persistencia mediante la cual accederá a la base de datos
+     */
     @PersistenceContext(unitName = "sacvefor-gestionTrazabilidadPU")
     private EntityManager em;
 
+    /**
+     * Método que implementa el abstracto para la obtención del EntityManager
+     * @return EntityManager para acceder a datos
+     */ 
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
 
+    /**
+     * Constructor
+     */
     public CopiaGuiaFacade() {
         super(CopiaGuia.class);
     }
     
     /**
      * Método para validar la existencia de una Copia en función de su nombre y destino
-     * @param nombre : Nombre de la CopiaGuia a validar
-     * @param destino : Destino de la CopiaGuia a validar
-     * @return 
+     * @param nombre Sring Nombre de la CopiaGuia a validar
+     * @param destino String Destino de la CopiaGuia a validar
+     * @return CopiaGuia copia de guía solicitado
      */
     public CopiaGuia getExistente(String nombre, String destino) {
         List<CopiaGuia> lstCopias;
@@ -54,8 +64,8 @@ public class CopiaGuiaFacade extends AbstractFacade<CopiaGuia> {
     
     /**
      * Método que devuelve todos las Copias habilitadas
-     * @param tipo : Tipo de Guía de la cual se pide las Copias
-     * @return 
+     * @param tipo TipoGuia Tipo de Guía de la cual se pide las Copias
+     * @return List<CopiaGuia> listado de las copias de guía habilitadas según el tipo 
      */
     public List<CopiaGuia> getHabilitadosByTipo(TipoGuia tipo){
         em = getEntityManager();
@@ -69,7 +79,7 @@ public class CopiaGuiaFacade extends AbstractFacade<CopiaGuia> {
 
     /**
      * Método que devuelve todos las Copias habilitadas
-     * @return 
+     * @return List<CopiaGuia> listado de las copias de guía habilitadas
      */
     public List<CopiaGuia> getHabilitados(){
         em = getEntityManager();
