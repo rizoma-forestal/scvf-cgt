@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * Indica los distintos tipos de parámetros que se manipularán con el entidad Parametrica
+ * Entidad que encapsula los detos de los distintos tipos de parámetros que se manipularán con el entidad Parametrica
  * @author rincostante
  */
 @Entity
@@ -26,25 +26,43 @@ import javax.xml.bind.annotation.XmlTransient;
 public class TipoParam implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    /**
+     * Variable privada: Identificador único
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    /**
+     * Variable privada: Nombre del tipo de paramétrica
+     */  
     @Column (nullable=false, length=50, unique=true)
     @NotNull(message = "El campo nombre no puede ser nulo")
     @Size(message = "El campo nombre no puede tener más de 50 caracteres", min = 1, max = 50)    
     private String nombre;    
     
+    /**
+     * Variable privada: listado de paramétricas del tipo en cuestión
+     */  
     @OneToMany (mappedBy="tipo", orphanRemoval = true)
     @Basic(fetch = FetchType.LAZY)
     private List<Parametrica> parametricas;   
     
+    /**
+     * Variable privada: Estado de habilitación
+     */
     private boolean habilitado;
     
     public TipoParam(){
         parametricas = new ArrayList<>();
     }
 
+    /**
+     * Método que indica si el tipo de paramétrica está habilitado o no
+     * No disponible para la API rest
+     * @return 
+     */
     @XmlTransient
     public boolean isHabilitado() {
         return habilitado;
@@ -70,6 +88,11 @@ public class TipoParam implements Serializable {
         this.nombre = nombre;
     }
 
+    /**
+     * Método que lista las PAramétricas de este tipo
+     * No disponible para la API rest
+     * @return 
+     */    
     @XmlTransient
     public List<Parametrica> getParametricas() {
         return parametricas;

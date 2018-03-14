@@ -21,22 +21,32 @@ import org.hibernate.envers.AuditReaderFactory;
 @Stateless
 public class ItemFacade extends AbstractFacade<Item> {
 
+    /**
+     * Variable privada: EntityManager al que se le indica la unidad de persistencia mediante la cual accederá a la base de datos
+     */
     @PersistenceContext(unitName = "sacvefor-gestionTrazabilidadPU")
     private EntityManager em;
 
+    /**
+     * Método que implementa el abstracto para la obtención del EntityManager
+     * @return EntityManager para acceder a datos
+     */ 
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
 
+    /**
+     * Constructor
+     */
     public ItemFacade() {
         super(Item.class);
     }
     
     /**
-     * Devuelve los items según la Guía enviada, todos los estados
-     * @param guia
-     * @return 
+     * Método que devuelve los items según la Guía enviada, todos los estados
+     * @param guia Guia guía cuyos ítems se solicitan
+     * @return List<Item> listado de los ítems solicitados
      */
     public List<Item> getByGuia(Guia guia){
         em = getEntityManager();
@@ -48,9 +58,9 @@ public class ItemFacade extends AbstractFacade<Item> {
     }      
 
     /**
-     * Devuelve los items habiliados según la Guía enviada
-     * @param guia
-     * @return 
+     * Método que devuelve los items habiliados según la Guía enviada
+     * @param guia Guia guía cuyos ítems habilitados se solicitan
+     * @return List<Item> listado de los ítems solicitados
      */
     public List<Item> getByGuiaHabilitados(Guia guia){
         em = getEntityManager();
@@ -63,9 +73,9 @@ public class ItemFacade extends AbstractFacade<Item> {
     }    
     
     /**
-     * Devuelve los Items habiliados según el Tipo
-     * @param tipo
-     * @return 
+     * Método que devuelve los Items habiliados según el Tipo
+     * @param tipo Parametrica tipo de los ítems solicitados
+     * @return List<Item> listado de los ítems solicitados
      */
     public List<Item> getByTipoHabilitados(Parametrica tipo){
         em = getEntityManager();
@@ -79,8 +89,8 @@ public class ItemFacade extends AbstractFacade<Item> {
     
     /**
      * Método para obtener todas las revisiones de la entidad
-     * @param idItem : id del Item
-     * @return 
+     * @param idItem Long id del Item
+     * @return List<Item> listado de las revisiones del ítem remitido
      */
     public List<Item> findRevisions(Long idItem){  
         List<Item> lstItems = new ArrayList<>();

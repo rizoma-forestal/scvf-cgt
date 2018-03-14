@@ -53,47 +53,141 @@ import javax.ws.rs.core.Response;
  */
 public class MbGuiaCierre implements Serializable{
 
+    /**
+     * Variable privada: ComponenteLocal Entidad que guarda la provincia de la cual se solicitan las guías pendientes de cierre
+     */  
     private ComponenteLocal provinciaSelected;
+    
+    /**
+     * Variable privada: List<ComponenteLocal> listado de los componentes locales registrados que compone el combo para su selección
+     */
     private List<ComponenteLocal> lstProvincias;
+    
+    /**
+     * Variable privada: List<ar.gob.ambiente.sacvefor.servicios.cgl.ItemProductivo> listado de los ítems correspondientes a la guía seleccionada
+     */  
     private List<ar.gob.ambiente.sacvefor.servicios.cgl.ItemProductivo> lstItemLocales;
+    
+    /**
+     * Variable privada: List<ar.gob.ambiente.sacvefor.servicios.cgl.Guia> listado de las guías pendientes de cierre de un componente local
+     */  
     private List<ar.gob.ambiente.sacvefor.servicios.cgl.Guia> lstGuiasLocal;
+    
+    /**
+     * Variable privada: List<ar.gob.ambiente.sacvefor.servicios.cgl.Guia> listado para el filtro de las guías
+     */  
     private List<ar.gob.ambiente.sacvefor.servicios.cgl.Guia> lstGuiasLocalFilters;
+    
+    /**
+     * Variable privada: ar.gob.ambiente.sacvefor.servicios.cgl.Guia Entidad para guardar la guía seleccionada
+     */  
     private ar.gob.ambiente.sacvefor.servicios.cgl.Guia guiaLocalSelected;
+    
+    /**
+     * Variable privada: Logger para escribir en el log del server
+     */  
     private static final Logger logger = Logger.getLogger(MbGuiaCierre.class.getName());
+    
+    /**
+     * Variable privada: MbSesion para gestionar las variables de sesión del usuario
+     */  
     private MbSesion sesion;
+    
+    /**
+     * Variable privada: Usuario de sesión
+     */  
     private Usuario usLogueado;
+    
+    /**
+     * Variable privada: indica si el formulario corresponde a una vista detalle de la guía
+     */  
     private boolean view;
+    
+    /**
+     * Variable privada: Logger para escribir en el log del server
+     */  
     static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(MbGuiaCierre.class);
     
     // campos para la API CGL
+    /**
+     * Variable privada: GuiaLocalClient Cliente para la API REST de Componente local
+     */
     private GuiaLocalClient guiaLocalClient;
+    
+    /**
+     * Variable privada: EstadoGuiaLocalClient Cliente para la API REST de Componente local
+     */
     private EstadoGuiaLocalClient estadoGuiaLocClient;
     
     // campos para la API CCV
+    /**
+     * Variable privada: GuiaCtrlClient Cliente para la API REST de Control y Verificación
+     */
     private GuiaCtrlClient guiaCtrlClient;
+    
+    /**
+     * Variable privada: ParamCtrlClient Cliente para la API REST de Control y Verificación
+     */
     private ParamCtrlClient paramCtrlClient;
     
     // campos y recursos para el envío de correos al usuario
-    @Resource(mappedName ="java:/mail/ambientePrueba")    
+    /**
+     * Variable privada: sesión de mail del servidor
+     */
+    @Resource(mappedName ="java:/mail/ambientePrueba") 
     private Session mailSesion;
+    
+    /**
+     * Variable privada: String mensaje a enviar por correo electrónico
+     */  
     private Message mensaje; 
     
     // inyección de recursos
+    /**
+     * Variable privada: EJB inyectado para el acceso a datos de Componente local
+     */  
     @EJB
     private ComponenteLocalFacade componenteLocFacade;
+    
+    /**
+     * Variable privada: EJB inyectado para el acceso a datos de EstadoGuia
+     */  
     @EJB
     private EstadoGuiaFacade estadoFacade;
+    
+    /**
+     * Variable privada: EJB inyectado para el acceso a datos de TipoGuia
+     */  
     @EJB
     private TipoGuiaFacade tipoGuiaFacade;
+    
+    /**
+     * Variable privada: EJB inyectado para el acceso a datos de Cuenta
+     */  
     @EJB
     private CuentaFacade cuentaFacade;
+    
+    /**
+     * Variable privada: EJB inyectado para el acceso a datos de TipoParam
+     */  
     @EJB
     private TipoParamFacade tipoParamFacade;
+    
+    /**
+     * Variable privada: EJB inyectado para el acceso a datos de Parametrica
+     */  
     @EJB
     private ParametricaFacade paramFacade;
+    
+    /**
+     * Variable privada: EJB inyectado para el acceso a datos de Guia
+     */  
     @EJB
     private GuiaFacade guiaFacade;
-
+    
+    /**
+     * Constructor
+     */
     public MbGuiaCierre() {
     }
 
@@ -105,6 +199,10 @@ public class MbGuiaCierre implements Serializable{
         this.lstItemLocales = lstItemLocales;
     }
 
+    /**
+     * Método que puebla el listado de las Provincias emisoras de guías
+     * @return List<ComponenteLocal> listado de los componentes locales de las provincias
+     */
     public List<ComponenteLocal> getLstProvincias() {
         lstProvincias = componenteLocFacade.getHabilitados();
         return lstProvincias;
@@ -159,7 +257,8 @@ public class MbGuiaCierre implements Serializable{
      ******************************/ 
     
     /**
-     * Método de inicialización del Bean
+     * Método que se ejecuta luego de instanciada la clase e inicializa las entidades a gestionar, 
+     * el bean de sesión y el usuario
      */
     @PostConstruct
     public void init(){
@@ -191,7 +290,8 @@ public class MbGuiaCierre implements Serializable{
      * Métodos operativos **
      ***********************/     
     /**
-     * Método para cargar las Guías locales a nombre del Usuario, pendientes de aceptación
+     * Método para cargar las Guías locales a nombre del Usuario, pendientes de aceptación.
+     * Las obtinene mediante una consulta a la API del componente local seleccionado oportunamente
      */
     public void cargarGuiasLocales() {
         if(provinciaSelected.getId() != null){
@@ -215,7 +315,8 @@ public class MbGuiaCierre implements Serializable{
     }    
     
     /**
-     * Método que prepara la vista detalle de la Guía seleccionada
+     * Método que prepara la vista detalle de la Guía seleccionada.
+     * Obtiene los items de la Guía mediante una consulta a la API del componente local emisor
      */
     public void prepareView(){
         // instancio el cliente para buscar los items
@@ -376,8 +477,9 @@ public class MbGuiaCierre implements Serializable{
      *********************/
     
     /**
-     * Método que crea el código de la Guía
-     * @return 
+     * Método privado que crea el código de la Guía.
+     * Consumido por aceptarGuia()
+     * @return String código de la guía
      */
     private String setCodigoGuia() {
         String codigo;
@@ -405,10 +507,11 @@ public class MbGuiaCierre implements Serializable{
     }
     
     /**
-     * Método para obtener una Paramétrica según su nombre y nombre del Tipo
-     * @param nomTipo : nombre del Tipo de Paramétrica
-     * @param nomParam : nombre de la Paramétrica
-     * @return 
+     * Método privado para obtener una Paramétrica según su nombre y nombre del Tipo.
+     * Consumido por varios métodos públicos.
+     * @param nomTipo String nombre del Tipo de Paramétrica
+     * @param nomParam String nombre de la Paramétrica
+     * @return Parametrica paramétrica solicitada
      */
     private Parametrica obtenerParametro(String nomTipo, String nomParam) {
         TipoParam tipo = tipoParamFacade.getExistente(nomTipo);
@@ -416,8 +519,9 @@ public class MbGuiaCierre implements Serializable{
     }    
 
     /**
-     * Método para enviar un correo al Origen de la Guía comunicando su cierre
-     * @return 
+     * Método privado para enviar un correo al Origen de la Guía comunicando su cierre.
+     * Consumido por aceptarGuia()
+     * @return boolean true o false según el correo se haya emitido o no
      */    
     private boolean enviarCorreo() {
         SimpleDateFormat formateador = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");

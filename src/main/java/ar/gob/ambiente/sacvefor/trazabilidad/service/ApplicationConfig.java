@@ -26,7 +26,9 @@ public class ApplicationConfig extends Application {
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(ar.gob.ambiente.sacvefor.trazabilidad.service.ParametricaFacadeREST.class);
+        resources.add(ar.gob.ambiente.sacvefor.trazabilidad.service.RestSecurityFilter.class);
         resources.add(ar.gob.ambiente.sacvefor.trazabilidad.service.TipoParamFacadeREST.class);
+        resources.add(ar.gob.ambiente.sacvefor.trazabilidad.service.UsuarioApiResource.class);
         resources.add(ar.gob.ambiente.sacvefor.trazabilidad.service.UsuarioFacadeREST.class);
     }
     

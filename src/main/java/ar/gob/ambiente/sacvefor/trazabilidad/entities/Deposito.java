@@ -20,24 +20,28 @@ import javax.persistence.OneToMany;
 public class Deposito implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    /**
+     * Variable privada: Identificador único
+     */  
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
-     * Nombre completo del Titular de la Cuenta.
+     * Variable privada: Nombre completo del Titular de la Cuenta.
      * Cacheado de la Cuenta
      */
     private String nombreTitular;
     
     /**
-     * Cuit del Titular de la Cuenta.
+     * Variable privada: Cuit del Titular de la Cuenta.
      * Cacheado de la Cuenta
      */
     private Long cuit;
     
     /**
-     * Listado de los Items derivados almacenados en el Deósito
+     * Variable privada: Items derivados almacenados en el Deósito
      */
     @OneToMany (mappedBy="deposito")
     private List<Item> items;

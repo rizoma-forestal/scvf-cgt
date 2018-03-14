@@ -23,22 +23,32 @@ import org.hibernate.envers.AuditReaderFactory;
 @Stateless
 public class GuiaFacade extends AbstractFacade<Guia> {
 
+    /**
+     * Variable privada: EntityManager al que se le indica la unidad de persistencia mediante la cual accederá a la base de datos
+     */
     @PersistenceContext(unitName = "sacvefor-gestionTrazabilidadPU")
     private EntityManager em;
 
+    /**
+     * Método que implementa el abstracto para la obtención del EntityManager
+     * @return EntityManager para acceder a datos
+     */ 
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
 
+    /**
+     * Constructor
+     */
     public GuiaFacade() {
         super(Guia.class);
     }
     
     /**
      * Metodo para validar una Guía existente según el codigo
-     * @param codigo
-     * @return 
+     * @param codigo String código de la Guía solicitada
+     * @return Guia Guía solicitada
      */
     public Guia getExistente(String codigo) {
         List<Guia> lstGuias;
@@ -58,8 +68,8 @@ public class GuiaFacade extends AbstractFacade<Guia> {
 
     /**
      * Método para obetener las Guías cuyo origen es el enviado como parámetro
-     * @param origen 
-     * @return 
+     * @param origen Cuenta origen de las guías que se solicitan
+     * @return List<Guia> listado de las guías solicitadas
      */
     public List<Guia> getByOrigen(Cuenta origen){
         em = getEntityManager();
@@ -72,8 +82,8 @@ public class GuiaFacade extends AbstractFacade<Guia> {
     
     /**
      * Método para obetener las Guías cuyo destino es el enviado como parámetro
-     * @param destino
-     * @return 
+     * @param destino Cuenta destino de las guías que se solicitan
+     * @return List<Guia> listado de las guías solicitadas
      */
     public List<Guia> getByDestino(Cuenta destino){
         em = getEntityManager();
@@ -86,8 +96,8 @@ public class GuiaFacade extends AbstractFacade<Guia> {
     
     /**
      * Método para obtener todas las Guías acreditadas a una Cuenta según su CUIT
-     * @param cuit
-     * @return 
+     * @param cuit Long cuit del titular de la Cuenta cuyas guías acreditadas se solicitan
+     * @return List<Guia> listado de las guías solicitadas
      */
     public List<Guia> getAcreditadas(Long cuit){
         String estado = ResourceBundle.getBundle("/Config").getString("EstCerrada");
@@ -103,8 +113,8 @@ public class GuiaFacade extends AbstractFacade<Guia> {
     
     /**
      * Método para obtener las Guías según el codigo de origen del Producto
-     * @param codigoOrigen : Código de origen del producto a buscar entre los Items de las Guía
-     * @return 
+     * @param codigoOrigen String Código de origen del producto a buscar entre los Items de las Guía
+     * @return List<Guia> listado de las guías solicitadas
      */
     public List<Guia> getByIdProd(String codigoOrigen){
         em = getEntityManager();
@@ -118,8 +128,8 @@ public class GuiaFacade extends AbstractFacade<Guia> {
     
     /**
      * Método para obtener las Guías según su estado
-     * @param estado : estado en el cual deberán estar las Guías retornadas
-     * @return 
+     * @param estado EstadoGuia estado en el cual deberán estar las Guías retornadas
+     * @return List<Guia> listado de las guías solicitadas
      */
     public List<Guia> getByEstado(EstadoGuia estado){
         em = getEntityManager();
@@ -133,8 +143,8 @@ public class GuiaFacade extends AbstractFacade<Guia> {
     /**
      * Método que devuelve las Guías vinculadas a un vehículo determinado
      * identificado por su matrícula
-     * @param matricula : matrícula del Vehículo cuyas Guías se quiere obtener.
-     * @return 
+     * @param matricula String matrícula del Vehículo cuyas Guías se quiere obtener.
+     * @return List<Guia> listado de las guías solicitadas
      */
     public List<Guia> getByVehiculo(String matricula){
         em = getEntityManager();
@@ -147,7 +157,7 @@ public class GuiaFacade extends AbstractFacade<Guia> {
     
     /**
      * Devuelve el último id registrado para una Guía
-     * @return 
+     * @return int último id registrado
      */
     public int getUltimoId(){    
         em = getEntityManager();    
@@ -163,8 +173,8 @@ public class GuiaFacade extends AbstractFacade<Guia> {
 
     /**
      * Método que devuelve las Guías vinculadas a un número de fuente determinado.
-     * @param numFuente : Código de la Guía que aportó los Items para la generación de las Guías buscadas
-     * @return 
+     * @param numFuente String Código de la Guía que aportó los Items para la generación de las Guías buscadas
+     * @return List<Guia> listado de las guías solicitadas
      */
     public List<Guia> findByNumFuente(String numFuente){
         em = getEntityManager();
@@ -177,8 +187,8 @@ public class GuiaFacade extends AbstractFacade<Guia> {
     
     /**
      * Metodo que devuelve las Guías en condiciones de ser fuentes de productos para una Cuenta a partir del CUIT
-     * @param cuit : cuit de la Cuenta cuyas Guías se busca
-     * @return 
+     * @param cuit Long cuit de la Cuenta cuyas Guías se busca
+     * @return List<Guia> listado de las guías solicitadas
      */
     public List<Guia> getFuenteByTitular(Long cuit){
         em = getEntityManager();
@@ -192,8 +202,8 @@ public class GuiaFacade extends AbstractFacade<Guia> {
     
     /**
      * Método para obtener todas las revisiones de la entidad
-     * @param codigo : Código único identificatorio de la Guía
-     * @return 
+     * @param codigo String Código único identificatorio de la Guía
+     * @return List<Guia> listado de las revisiones de la guía remitida
      */
     public List<Guia> findRevisions(String codigo){  
         List<Guia> lstGuias = new ArrayList<>();

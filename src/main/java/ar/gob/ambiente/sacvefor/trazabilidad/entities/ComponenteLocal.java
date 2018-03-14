@@ -18,12 +18,16 @@ import javax.validation.constraints.Size;
 public class ComponenteLocal implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    /**
+     * Variable privada: Identificador único
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     /**
-     * Nombre de la Provincia a la cual pertenece el Componente local
+     * Variable privada: Nombre de la Provincia a la cual pertenece el Componente local
      */
     @Column (nullable=false, length=50)
     @NotNull(message = "El campo nombreCompleto no puede ser nulo")
@@ -31,12 +35,12 @@ public class ComponenteLocal implements Serializable {
     private String provincia;
     
     /**
-     * Identificación de la Provincia en el SErvicio de Gestión territorial
+     * Variable privada: Identificación de la Provincia en el Servicio de Gestión territorial
      */
     private Long idProvGt;    
     
     /**
-     * Url de acceso al raíz del Componente local
+     * Variable privada: Url de acceso al raíz del Componente local
      */
     @Column (nullable=false, length=100)
     @NotNull(message = "El campo nombreCompleto no puede ser nulo")
@@ -44,7 +48,7 @@ public class ComponenteLocal implements Serializable {
     private String url;
     
     /**
-     * Estado de habilitación
+     * Variable privada: Estado de habilitación
      */
     private boolean habilitado;
 

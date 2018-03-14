@@ -20,18 +20,55 @@ import org.apache.log4j.Logger;
  */
 public class MbGuiaPrim implements Serializable{
 
+    /**
+     * Variable privada: Guia Entidad que guarda la Guía seleccionada para su edición o vista.
+     */  
     private Guia guiaSelected;
+    
+    /**
+     * Variable privada: List<Guia> listado de las guías primarias acreditadas al usuario
+     */
     private List<Guia> lstGuias;
+    
+    /**
+     * Variable privada: List<Guia> listado para el filtrado de las guías primarias acreditadas al usuario
+     */
     private List<Guia> lstGuiaFilters;
+    
+    /**
+     * Variable privada: MbSesion para gestionar las variables de sesión del usuario
+     */  
     private MbSesion sesion;
+    
+    /**
+     * Variable privada: Usuario de sesión
+     */  
     private Usuario usLogueado;
+    
+    /**
+     * Variable privada: indica si el formulario corresponde a una vista detalle de la guía
+     */
     private boolean view;
+    
+    /**
+     * Variable privada: indica si el bean está iniciado
+     */
     private boolean iniciado;
+    
+    /**
+     * Variable privada: Logger para escribir en el log del server
+     */  
     static final Logger LOG = Logger.getLogger(MbGuiaPrim.class);
     
+    /**
+     * Variable privada: EJB inyectado para el acceso a datos de Guia
+     */  
     @EJB
     private GuiaFacade guiaFacade;
     
+    /**
+     * Constructor
+     */
     public MbGuiaPrim() {
     }
 
@@ -70,6 +107,11 @@ public class MbGuiaPrim implements Serializable{
     /******************************
      * Métodos de inicialización **
      ******************************/
+    
+    /**
+     * Método que se ejecuta luego de instanciada la clase e inicializa las entidades a gestionar, 
+     * el bean de sesión y el usuario
+     */    
     @PostConstruct
     public void init(){
         if(!iniciado){
@@ -90,10 +132,16 @@ public class MbGuiaPrim implements Serializable{
         }
     }
     
+    /**
+     * Método que prepara la vista detalle de la Guía seleccionada.
+     */
     public void prepareView(){
         view = true;
     }
     
+    /**
+     * Método que prepara el listado de Guías acreditadas
+     */
     public void prepareList(){
         view = false;
         guiaSelected = null;

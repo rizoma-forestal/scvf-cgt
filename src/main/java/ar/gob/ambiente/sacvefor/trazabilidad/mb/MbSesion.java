@@ -15,6 +15,7 @@ import ar.gob.ambiente.sacvefor.trazabilidad.territ.client.ProvinciaClient;
 import ar.gob.ambiente.sacvefor.trazabilidad.util.CriptPass;
 import ar.gob.ambiente.sacvefor.trazabilidad.util.EntidadServicio;
 import ar.gob.ambiente.sacvefor.trazabilidad.util.JsfUtil;
+import ar.gob.ambiente.sacvefor.trazabilidad.util.Token;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,6 +39,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 /**
@@ -46,41 +48,161 @@ import javax.ws.rs.core.Response;
  */
 public class MbSesion {
 
+    /**
+     * Variable privada: cuit que actúa como login del usuario
+     */  
     private Long cuit;
+    
+    /**
+     * Variable privada: clave ingresada por el usuario
+     */      
     private String clave;
+    
+    /**
+     * Variable privada: clave encriptada para su validación
+     */  
     private String claveEncript;
+    
+    /**
+     * Variable privada: nueva clave solicitada al usuario en su primera sesión
+     */  
     private String newClave;
+    
+    /**
+     * Variable privada: repetición de la nueva clave
+     */  
     private String newClave2;
+    
+    /**
+     * Variable privada: Usuario logueado
+     */      
     private Usuario usuario;
+    
+    /**
+     * Variable privada: indica si el usuario tiene o no tiene cuenta asociada
+     */      
     private boolean sinCuenta;
+    
+    /**
+     * Variable privada: indica si el usuario está o no logeado
+     */      
     private boolean logeado = false;
   
     // campos para la gestión de datos de las API
-    private PersonaClient personaClient;   
-    private Persona personaRue;
-    private ProvinciaClient provClient;    
-    private DepartamentoClient deptoClient;   
-    private static final Logger logger = Logger.getLogger(MbSesion.class.getName());
     /**
-     * Campos para la gestión de las Entidades provenientes de la API Territorial en los combos del formulario.
+     * Variable privada: PersonaClient Cliente para la API REST de Entidades (RUE)
+     */
+    private PersonaClient personaClient;   
+    
+    /**
+     * Variable privada: persona obtenida del RUE
+     */
+    private Persona personaRue;
+    
+    /**
+     * Variable privada: UsuarioClient Cliente para la API REST de Entidades (RUE)
+     */
+    private ar.gob.ambiente.sacvefor.trazabilidad.rue.client.UsuarioClient usuarioClientRue;
+    
+    /**
+     * Variable privada: Token obtenido al validar el usuario de la API RUE
+     */  
+    private Token tokenRue;
+    
+    /**
+     * Variable privada: Token en formato String del obtenido al validar el usuario de la API RUE
+     */ 
+    private String strTokenRue;
+    
+    /**
+     * Variable privada: ProvinciaClient Cliente para la API REST de Territorial
+     */
+    private ProvinciaClient provClient;    
+    
+    /**
+     * Variable privada: DepartamentoClient Cliente para la API REST de Territorial
+     */
+    private DepartamentoClient deptoClient;
+    
+    /**
+     * Variable privada: Logger para escribir en el log del server
+     */  
+    private static final Logger logger = Logger.getLogger(MbSesion.class.getName());
+    
+    /**
+     * Variable privada: UsuarioClient Cliente para la API REST de Territorial
+     */
+    private ar.gob.ambiente.sacvefor.trazabilidad.territ.client.UsuarioClient usuarioClientTerr;
+    
+    /**
+     * Variable privada: Token obtenido al validar el usuario de la API Territorial
+     */ 
+    private Token tokenTerr;
+    
+    /**
+     * Variable privada: Token en formato String del obtenido al validar el usuario de la API Territorial
+     */ 
+    private String strTokenTerr;   
+    
+
+    // Campos para la gestión de las Entidades provenientes de la API Territorial en los combos del formulario.
+    /**
+     * Variable privada: Listado id y nombre de las provincias para poblar el combo para su selección
      */  
     private List<EntidadServicio> listProvincias;
+    
+    /**
+     * Variable privada: contiene la provincia seleccionada del combo
+     */  
     private EntidadServicio provSelected;
+    
+    /**
+     * Variable privada: Listado id y nombre de los departamentos para poblar el combo para su selección
+     */  
     private List<EntidadServicio> listDepartamentos;
+    
+    /**
+     * Variable privada: contiene el departamento seleccionada del combo
+     */  
     private EntidadServicio deptoSelected;
+    
+    /**
+     * Variable privada: Listado id y nombre de las localidades para poblar el combo para su selección
+     */  
     private List<EntidadServicio> listLocalidades;
+    
+    /**
+     * Variable privada: contiene la localidad seleccionada del combo
+     */  
     private EntidadServicio localSelected;    
     
     // campos para la notificación al Usuario
+    /**
+     * Variable privada: sesión de mail del servidor
+     */
     @Resource(mappedName ="java:/mail/ambientePrueba")    
     private Session mailSesion;
+    
+    /**
+     * Variable privada: String mensaje a enviar por correo electrónico
+     */  
     private Message mensaje;       
     
+    /**
+     * Variable privada: EJB inyectado para el acceso a datos de Usuario
+     */  
     @EJB
     private UsuarioFacade usuarioFacade;
+    
+    /**
+     * Variable privada: EJB inyectado para el acceso a datos de Cuenta
+     */  
     @EJB
     private CuentaFacade cuentaFacade;
     
+    /**
+     * Constructor
+     */
     public MbSesion() {
     }
 
@@ -211,6 +333,9 @@ public class MbSesion {
      * Métodos de inicialización **
      ******************************/
 
+    /**
+     * Método que se ejecuta luego de instanciada la clase e invoca al método privado para setear la estructura territorial
+     */       
     @PostConstruct
     public void init(){
         cargarProvincias();
@@ -237,7 +362,10 @@ public class MbSesion {
      ***********************/ 
     
     /**
-     * Método para validar los datos del usuario
+     * Método para validar los datos del usuario.
+     * Verifica si el usuario tiene cuenta, si no la tiene, obtiene los datos personales mediante la API RUE
+     * y redirecciona a la vista que solicita la validación de los datos domiciliarios y actualiza la contraseña.
+     * Si ya tiene cuenta, redirecciona a la vista principal.
      */
     public void login(){
         ExternalContext contextoExterno = FacesContext.getCurrentInstance().getExternalContext();
@@ -259,11 +387,21 @@ public class MbSesion {
                     JsfUtil.addSuccessMessage("Bienvenid@ " + usuario.getNombreCompleto());
                 }else{
                     sinCuenta = true;
+                    // instancio el cliente para la selección de la Persona RUE, obtengo el token si no está seteado o está vencido
+                    if(tokenRue == null){
+                        getTokenRue();
+                    }else try {
+                        if(!tokenRue.isVigente()){
+                            getTokenRue();
+                        }
+                    } catch (IOException ex) {
+                        logger.log(Level.SEVERE, "{0} - {1}", new Object[]{"Hubo un error obteniendo la vigencia del token RUE", ex.getMessage()});
+                    }
                     // obtengo los datos de la persona
                     List<ar.gob.ambiente.sacvefor.servicios.rue.Persona> listPersonas = new ArrayList<>();
                     personaClient = new PersonaClient();
                     GenericType<List<ar.gob.ambiente.sacvefor.servicios.rue.Persona>> gType = new GenericType<List<ar.gob.ambiente.sacvefor.servicios.rue.Persona>>() {};
-                    Response response = personaClient.findByQuery_JSON(Response.class, null, String.valueOf(String.valueOf(usuario.getLogin())), null);
+                    Response response = personaClient.findByQuery_JSON(Response.class, null, String.valueOf(String.valueOf(usuario.getLogin())), null, tokenRue.getStrToken());
                     listPersonas = response.readEntity(gType);
                     if(!listPersonas.isEmpty()){
                         personaRue = listPersonas.get(0);
@@ -283,7 +421,9 @@ public class MbSesion {
     }   
     
     /**
-     * Método para persistir la Cuenta del Usuario
+     * Método para persistir la Cuenta del Usuario.
+     * Notifica la novedad al usuario por correo electrónico.
+     * Si hubo un error, cierra la sesión para volver a repetir la operación.
      */
     public void saveCuenta(){
         if(validarCuenta()){
@@ -382,7 +522,10 @@ public class MbSesion {
     }         
     
     /**
-     * Método para cambiar la clave del Usuario
+     * Método para cambiar la clave del Usuario.
+     * Puede hacerlo en cualquier momento. Como en el caso de la validación de la cuenta,
+     * notifica al usuario el cambio por correo electrónico y si hay un error, cierra la
+     * sesión para volver a intentar la operación.
      */
     public void saveNewPass(){
         ExternalContext contextoExterno = FacesContext.getCurrentInstance().getExternalContext();
@@ -423,19 +566,32 @@ public class MbSesion {
      *********************/
 
     /**
-     * Método para cargar los Departamentos vinculados a la Provincia
-     * @param id 
+     * Método privado para cargar los Departamentos vinculados a la Provincia.
+     * Utilizado por provinciaChangeListener().
+     * Una vez seleccionada la Provincia, puebla el listado con los Departamentos pertenecientes a ella
+     * consultando la API Territorial.
+     * @param id Long identificación de la Provincia en el RUE
      */
     private void getDepartamentosSrv(Long idProv) {
         EntidadServicio depto;
         List<Departamento> listSrv;
         
         try{
+            // instancio el cliente para la selección de la Provincia TERR, obtengo el token si no está seteado o está vencido
+            if(tokenTerr == null){
+                getTokenTerr();
+            }else try {
+                if(!tokenTerr.isVigente()){
+                    getTokenTerr();
+                }
+            } catch (IOException ex) {
+                logger.log(Level.SEVERE, "{0} - {1}", new Object[]{"Hubo un error obteniendo la vigencia del token RUE", ex.getMessage()});
+            }
             // instancio el cliente para la selección de los Departamentos
             provClient = new ProvinciaClient();
             // obtngo el listado
             GenericType<List<Departamento>> gType = new GenericType<List<Departamento>>() {};
-            Response response = provClient.findByProvincia_JSON(Response.class, String.valueOf(idProv));
+            Response response = provClient.findByProvincia_JSON(Response.class, String.valueOf(idProv), tokenTerr.getStrToken());
             listSrv = response.readEntity(gType);
             // lleno el listado de los combos
             listDepartamentos = new ArrayList<>();
@@ -454,18 +610,29 @@ public class MbSesion {
     }
     
     /**
-     * Método para cargar el listado de Provincias para su selección
+     * Método privado para cargar el listado de Provincias para su selección mediante la API Territorial
+     * Utilizado por el método init()
      */
     private void cargarProvincias() {
         EntidadServicio provincia;
         List<Provincia> listSrv;
         
         try{
+            // instancio el cliente para la selección de la Provincia TERR, obtengo el token si no está seteado o está vencido
+            if(tokenTerr == null){
+                getTokenTerr();
+            }else try {
+                if(!tokenTerr.isVigente()){
+                    getTokenTerr();
+                }
+            } catch (IOException ex) {
+                logger.log(Level.SEVERE, "{0} - {1}", new Object[]{"Hubo un error obteniendo la vigencia del token RUE", ex.getMessage()});
+            }
             // instancio el cliente para la selección de las provincias
             provClient = new ProvinciaClient();
             // obtengo el listado de provincias 
             GenericType<List<Provincia>> gType = new GenericType<List<Provincia>>() {};
-            Response response = provClient.findAll_JSON(Response.class);
+            Response response = provClient.findAll_JSON(Response.class, tokenTerr.getStrToken());
             listSrv = response.readEntity(gType);
             // lleno el list con las provincias como un objeto Entidad Servicio
             listProvincias = new ArrayList<>();
@@ -486,19 +653,31 @@ public class MbSesion {
     }      
 
     /**
-     * Método que carga el listado de Localidades según el Departamento seleccionado
-     * @param id 
+     * Método privado que carga el listado de Localidades según el Departamento seleccionado.
+     * Mediante la API correspondiente del servicio Territorial.
+     * Utilizado por deptoChangeListener()
+     * @param id Long identificación del Departamento en el RUE
      */    
     private void getLocalidadesSrv(Long idDepto) {
         EntidadServicio local;
         List<CentroPoblado> listSrv;
         
         try{
+            // instancio el cliente para la selección del Departamento TERR, obtengo el token si no está seteado o está vencido
+            if(tokenTerr == null){
+                getTokenTerr();
+            }else try {
+                if(!tokenTerr.isVigente()){
+                    getTokenTerr();
+                }
+            } catch (IOException ex) {
+                logger.log(Level.SEVERE, "{0} - {1}", new Object[]{"Hubo un error obteniendo la vigencia del token RUE", ex.getMessage()});
+            }
             // instancio el cliente para la selección de las Localidades
             deptoClient = new DepartamentoClient();
             // obtngo el listado
             GenericType<List<CentroPoblado>> gType = new GenericType<List<CentroPoblado>>() {};
-            Response response = deptoClient.findByDepto_JSON(Response.class, String.valueOf(idDepto));
+            Response response = deptoClient.findByDepto_JSON(Response.class, String.valueOf(idDepto), tokenTerr.getStrToken());
             listSrv = response.readEntity(gType);
             // lleno el listado de los combos
             listLocalidades = new ArrayList<>();
@@ -517,8 +696,10 @@ public class MbSesion {
     }
 
     /**
-     * Metodo para validar los datos seleccionados por el Usuario para el registro de la Cuenta
-     * @return 
+     * Metodo privado para validar los datos seleccionados por el Usuario para el registro de la Cuenta.
+     * Compara la localidad seleccionada con la correspondiente a la Persona en el RUE y las nueva clave y su repetición.
+     * Utilizado por saveCuenta()
+     * @return boolean true o false según valide o no.
      */
     private boolean validarCuenta() {
         if(!Objects.equals(localSelected.getId(), personaRue.getDomicilio().getIdLocalidadGt())){
@@ -533,8 +714,11 @@ public class MbSesion {
     }
 
     /**
-     * Método para notificar al usuario la actualización de su clave
-     * @return 
+     * Método privado para notificar al usuario la actualización de su clave.
+     * Envía un correo electrónico al usuario con la nueva clave ingresada
+     * mediante el objeto de sesión para el envío de mails "mailSesion".
+     * Utilizado en los método saveNewPass() saveCuenta()
+     * @return boolean true o false según el correo se haya enviado correctamente o no
      */
     private boolean notificarUsuario() {
         boolean result;
@@ -578,4 +762,42 @@ public class MbSesion {
         
         return result;
     }
+    
+    /**
+     * Método privado que obtiene y setea el tokenRue para autentificarse ante la API rest del RUE
+     * Crea el campo de tipo Token con la clave recibida y el momento de la obtención.
+     * Utilizado por login()
+     */
+    private void getTokenRue(){
+        try{
+            usuarioClientRue = new ar.gob.ambiente.sacvefor.trazabilidad.rue.client.UsuarioClient();
+            Response responseUs = usuarioClientRue.authenticateUser_JSON(Response.class, ResourceBundle.getBundle("/Config").getString("UsRestRue"));
+            MultivaluedMap<String, Object> headers = responseUs.getHeaders();
+            List<Object> lstHeaders = headers.get("Authorization");
+            strTokenRue = (String)lstHeaders.get(0); 
+            tokenRue = new Token(strTokenRue, System.currentTimeMillis());
+            usuarioClientRue.close();
+        }catch(ClientErrorException ex){
+            System.out.println("Hubo un error obteniendo el token para la API Territorial: " + ex.getMessage());
+        }
+    } 
+    
+    /**
+     * Método privado que obtiene y setea el token para autentificarse ante la API rest de Territorial
+     * Crea el campo de tipo Token con la clave recibida y el momento de la obtención.
+     * Utilizado por los método getLocalidadesSrv(), cargarProvincias() y getDepartamentosSrv()
+     */
+    private void getTokenTerr(){
+        try{
+            usuarioClientTerr = new ar.gob.ambiente.sacvefor.trazabilidad.territ.client.UsuarioClient();
+            Response responseUs = usuarioClientTerr.authenticateUser_JSON(Response.class, ResourceBundle.getBundle("/Config").getString("UsRestTerr"));
+            MultivaluedMap<String, Object> headers = responseUs.getHeaders();
+            List<Object> lstHeaders = headers.get("Authorization");
+            strTokenTerr = (String)lstHeaders.get(0); 
+            tokenTerr = new Token(strTokenTerr, System.currentTimeMillis());
+            usuarioClientTerr.close();
+        }catch(ClientErrorException ex){
+            System.out.println("Hubo un error obteniendo el token para la API RUE: " + ex.getMessage());
+        }
+    }       
 }
