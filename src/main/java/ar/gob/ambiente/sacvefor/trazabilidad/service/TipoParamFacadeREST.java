@@ -42,7 +42,7 @@ public class TipoParamFacadeREST {
     /**
      * @api {post} /tipoparams Registrar un TipoParam
      * @apiExample {curl} Ejemplo de uso:
-     *     curl -X POST -d [PATH_SERVER]/rue/rest/tipoparams -H "authorization: xXyYvWzZ"
+     *     curl -X POST -d [PATH_SERVER]/trazabilidad/rest/tipoparams -H "authorization: xXyYvWzZ"
      * @apiVersion 1.0.0
      * @apiName PostTipoParam
      * @apiGroup TipoParam
@@ -51,7 +51,7 @@ public class TipoParamFacadeREST {
      *     {
      *       "Authorization": "xXyYvWzZ"
      *     } 
-     * @apiParam {ar.gob.ambiente.sacvefor.servicios.trazabilidad.TipoParam} entity Objeto java del paquete paqRue.jar con los datos de la tipo de paramétrica a registrar
+     * @apiParam {ar.gob.ambiente.sacvefor.servicios.trazabilidad.TipoParam} entity Objeto java del paquete paqTrazabilidad.jar con los datos de la tipo de paramétrica a registrar
      * @apiParamExample {java} Ejemplo de TipoParam
      *      {"entity": {
      *          "id": "0",
@@ -63,7 +63,7 @@ public class TipoParamFacadeREST {
      *     HTTP/1.1 201 OK
      *     {
      *       {
-     *          "Location": "[PATH_SERVER]/rue/rest/tipoparams/:id"
+     *          "Location": "[PATH_SERVER]/trazabilidad/rest/tipoparams/:id"
      *       }
      *     }
      *
@@ -97,7 +97,7 @@ public class TipoParamFacadeREST {
     /**
      * @api {put} /tipoparams/:id Actualizar un tipo de paramétruica existente
      * @apiExample {curl} Ejemplo de uso:
-     *     curl -X PUT -d [PATH_SERVER]/rue/rest/tipoparams/1 -H "authorization: xXyYvWzZ"
+     *     curl -X PUT -d [PATH_SERVER]/trazabilidad/rest/tipoparams/1 -H "authorization: xXyYvWzZ"
      * @apiVersion 1.0.0
      * @apiName PutTipoParam
      * @apiGroup TipoParam
@@ -106,7 +106,7 @@ public class TipoParamFacadeREST {
      *     {
      *       "Authorization": "xXyYvWzZ"
      *     } 
-     * @apiParam {ar.gob.ambiente.sacvefor.servicios.trazabilidad.TipoParam} entity Objeto java del paquete paqRue.jar con los datos del tipo de paramétrica a actualizar
+     * @apiParam {ar.gob.ambiente.sacvefor.servicios.trazabilidad.TipoParam} entity Objeto java del paquete paqTrazabilidad.jar con los datos del tipo de paramétrica a actualizar
      * @apiParam {Long} Id Identificador único del tipo de paramétrica a actualizar
      * @apiParamExample {java} Ejemplo de TipoParam
      *      {"entity": {
@@ -150,7 +150,7 @@ public class TipoParamFacadeREST {
     /**
      * @api {get} /tipoparams/:id Ver un TipoParam
      * @apiExample {curl} Ejemplo de uso:
-     *     curl -X GET -d [PATH_SERVER]/rue/rest/tipoparams/2 -H "authorization: xXyYvWzZ"
+     *     curl -X GET -d [PATH_SERVER]/trazabilidad/rest/tipoparams/2 -H "authorization: xXyYvWzZ"
      * @apiVersion 1.0.0
      * @apiName GetTipoParam
      * @apiGroup TipoParam
@@ -189,7 +189,7 @@ public class TipoParamFacadeREST {
     /**
      * @api {get} /tipoparams Ver todas los tipos de paramétricas
      * @apiExample {curl} Ejemplo de uso:
-     *     curl -X GET -d [PATH_SERVER]/rue/rest/tipoparams -H "authorization: xXyYvWzZ"
+     *     curl -X GET -d [PATH_SERVER]/trazabilidad/rest/tipoparams -H "authorization: xXyYvWzZ"
      * @apiVersion 1.0.0
      * @apiName GetTipoParams
      * @apiGroup TipoParam
@@ -228,7 +228,7 @@ public class TipoParamFacadeREST {
     /**
      * @api {get} /tipoparams/query?nombre=:nombre Ver tipo de paramétrica según su nombre
      * @apiExample {curl} Ejemplo de uso:
-     *     curl -X GET -d [PATH_SERVER]/rue/rest/tipoparams/query?nombre=ROL_USUARIOS -H "authorization: xXyYvWzZ"
+     *     curl -X GET -d [PATH_SERVER]/trazabilidad/rest/tipoparams/query?nombre=ROL_USUARIOS -H "authorization: xXyYvWzZ"
      * @apiVersion 1.0.0
      * @apiName GetTipoParamQuery
      * @apiGroup TipoParam
@@ -272,7 +272,7 @@ public class TipoParamFacadeREST {
     /**
      * @api {get} /tipoparams/:id/parametricas Ver las paramétricas
      * @apiExample {curl} Ejemplo de uso:
-     *     curl -X GET -d [PATH_SERVER]/rue/rest/tipoparams/1/parametricas -H "authorization: xXyYvWzZ"
+     *     curl -X GET -d [PATH_SERVER]/trazabilidad/rest/tipoparams/1/parametricas -H "authorization: xXyYvWzZ"
      * @apiVersion 1.0.0
      * @apiName GetPareametricas
      * @apiGroup TipoParam

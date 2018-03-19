@@ -23,6 +23,8 @@ import ar.gob.ambiente.sacvefor.trazabilidad.facades.ParametricaFacade;
 import ar.gob.ambiente.sacvefor.trazabilidad.facades.TipoGuiaFacade;
 import ar.gob.ambiente.sacvefor.trazabilidad.facades.TipoParamFacade;
 import ar.gob.ambiente.sacvefor.trazabilidad.util.JsfUtil;
+import ar.gob.ambiente.sacvefor.trazabilidad.util.Token;
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,6 +47,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 /**
@@ -125,10 +128,16 @@ public class MbGuiaCierre implements Serializable{
      */
     private GuiaCtrlClient guiaCtrlClient;
     
+    private ar.gob.ambiente.sacvefor.trazabilidad.ctrl.client.UsuarioApiClient usClientCtrl;
+    private String strTokenCtrl;
+    private Token tokenCtrl;    
+    
     /**
      * Variable privada: ParamCtrlClient Cliente para la API REST de Control y Verificación
      */
     private ParamCtrlClient paramCtrlClient;
+    
+    
     
     // campos y recursos para el envío de correos al usuario
     /**
@@ -416,11 +425,21 @@ public class MbGuiaCierre implements Serializable{
                             JsfUtil.addErrorMessage("No se pudo enviar el mensaje de confirmación al Titular de la Guía emitida.");
                         }
                     }
+                    // obtengo el token si no está seteado o está vencido
+                    if(tokenCtrl == null){
+                        getTokenCtrl();
+                    }else try {
+                        if(!tokenCtrl.isVigente()){
+                            getTokenCtrl();
+                        }
+                    } catch (IOException ex) {
+                        logger.log(Level.SEVERE, "{0} - {1}", new Object[]{"Hubo un error obteniendo la vigencia del token", ex.getMessage()});
+                    }
                     // busco la Guía en el CCV
                     guiaCtrlClient = new GuiaCtrlClient();
                     List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia> lstGuias;
                     GenericType<List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia>> gTypeG = new GenericType<List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia>>() {};
-                    Response response = guiaCtrlClient.findByQuery_JSON(Response.class, guiaLocalSelected.getCodigo(), null, null);
+                    Response response = guiaCtrlClient.findByQuery_JSON(Response.class, guiaLocalSelected.getCodigo(), null, null, tokenCtrl.getStrToken());
                     lstGuias = response.readEntity(gTypeG);
                     if(lstGuias.get(0) != null){
                         // si está registrada en el CCV, actualizo su estado
@@ -431,14 +450,14 @@ public class MbGuiaCierre implements Serializable{
                         List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Parametrica> lstParmEstados;
                         paramCtrlClient = new ParamCtrlClient();
                         GenericType<List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Parametrica>> gTypeParam = new GenericType<List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Parametrica>>() {};
-                        responseCgl = paramCtrlClient.findByQuery_JSON(Response.class, ResourceBundle.getBundle("/Config").getString("CtrlTipoParamEstGuia"), ResourceBundle.getBundle("/Config").getString("CtrlGuiaCerrada"));
+                        responseCgl = paramCtrlClient.findByQuery_JSON(Response.class, ResourceBundle.getBundle("/Config").getString("CtrlTipoParamEstGuia"), ResourceBundle.getBundle("/Config").getString("CtrlGuiaCerrada"), tokenCtrl.getStrToken());
                         lstParmEstados = responseCgl.readEntity(gTypeParam);
                         // solo continúo si encontré el Estado correspondiente
                         if(!lstParmEstados.isEmpty()){
                             // seteo la Guía solo con los valores que necesito para editarla
                             guiaCtrol.setId(idGuiaCtrl);
                             guiaCtrol.setEstado(lstParmEstados.get(0));
-                            responseCgl = guiaCtrlClient.edit_JSON(guiaCtrol, String.valueOf(guiaCtrol.getId()));
+                            responseCgl = guiaCtrlClient.edit_JSON(guiaCtrol, String.valueOf(guiaCtrol.getId()), tokenCtrl.getStrToken());
                             if(responseCgl.getStatus() == 200){
                                 // se completaron todas las operaciones
                                 JsfUtil.addSuccessMessage("La Guía se cerró correctamente y se actualizaron los Componentes de Gestión local y Cotrol y Verificación.");
@@ -563,4 +582,23 @@ public class MbGuiaCierre implements Serializable{
         
         return result;
     }
+    
+    /**
+     * Método privado que obtiene y setea el tokenTraz para autentificarse ante la API rest de control y verificación.
+     * Crea el campo de tipo Token con la clave recibida y el momento de la obtención.
+     * Utilizado en aceptarGuia()
+     */    
+    private void getTokenCtrl(){
+        try{
+            usClientCtrl = new ar.gob.ambiente.sacvefor.trazabilidad.ctrl.client.UsuarioApiClient();
+            Response responseUs = usClientCtrl.authenticateUser_JSON(Response.class, ResourceBundle.getBundle("/Config").getString("UsRestCtrl"));
+            MultivaluedMap<String, Object> headers = responseUs.getHeaders();
+            List<Object> lstHeaders = headers.get("Authorization");
+            strTokenCtrl = (String)lstHeaders.get(0); 
+            tokenCtrl = new Token(strTokenCtrl, System.currentTimeMillis());
+            usClientCtrl.close();
+        }catch(ClientErrorException ex){
+            System.out.println("Hubo un error obteniendo el token: " + ex.getMessage());
+        }
+    }     
 }

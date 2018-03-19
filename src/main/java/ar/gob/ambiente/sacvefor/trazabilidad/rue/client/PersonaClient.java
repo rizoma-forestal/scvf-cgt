@@ -59,6 +59,7 @@ public class PersonaClient {
      * PUT /personas/:id
      * @param requestEntity ar.gob.ambiente.sacvefor.servicios.rue.Persona Entidad Persona para encapsular los datos de la Persona que se quiere editar
      * @param id String id de la Persona que se quier editar
+     * @param token String token recibido previamente al validar el usuario en la API. Irá en el header.
      * @return javax.ws.rs.core.Response con el resultado de la operación
      * @throws ClientErrorException Excepcion a ejecutar
      */
@@ -74,6 +75,7 @@ public class PersonaClient {
      * PUT /personas/:id
      * @param requestEntity ar.gob.ambiente.sacvefor.servicios.rue.Persona Entidad Persona para encapsular los datos de la Persona que se quiere editar
      * @param id String id de la Persona que se quier editar
+     * @param token String token recibido previamente al validar el usuario en la API. Irá en el header.
      * @return javax.ws.rs.core.Response con el resultado de la operación
      * @throws ClientErrorException Excepcion a ejecutar
      */
@@ -166,6 +168,7 @@ public class PersonaClient {
      * @param <T> Tipo genérico
      * @param responseType Entidad en la que se setearán los datos serializados obtenidos, en este caso será Persona
      * @param id String id de la Persona a obtener
+     * @param token String token recibido previamente al validar el usuario en la API. Irá en el header.
      * @return <T> Persona persona obtenida según el id remitido
      * @throws ClientErrorException Excepcion a ejecutar
      */
@@ -183,6 +186,7 @@ public class PersonaClient {
      * @param <T> Tipo genérico
      * @param responseType Entidad en la que se setearán los datos serializados obtenidos, en este caso será Persona
      * @param id String id de la Persona a obtener
+     * @param token String token recibido previamente al validar el usuario en la API. Irá en el header.
      * @return <T> Persona persona obtenida según el id remitido
      * @throws ClientErrorException Excepcion a ejecutar
      */
@@ -210,6 +214,7 @@ public class PersonaClient {
      * Método para crear una Persona para su control en el RUE. En formato XML
      * POST /personas
      * @param requestEntity ar.gob.ambiente.sacvefor.servicios.rue.Persona Entidad Persona para encapsular los datos de la Persona que se quiere registrar
+     * @param token String token recibido previamente al validar el usuario en la API. Irá en el header.
      * @return javax.ws.rs.core.Response con el resultado de la operación que incluye la url de acceso a la Persona creada mediante GET
      * @throws ClientErrorException Excepcion a ejecutar
      */
@@ -223,6 +228,7 @@ public class PersonaClient {
      * Método para crear una Persona para su control en el RUE. En formato JSON
      * POST /personas
      * @param requestEntity ar.gob.ambiente.sacvefor.servicios.rue.Persona Entidad Persona para encapsular los datos de la Persona que se quiere registrar
+     * @param token String token recibido previamente al validar el usuario en la API. Irá en el header.
      * @return javax.ws.rs.core.Response con el resultado de la operación que incluye la url de acceso a la Persona creada mediante GET
      * @throws ClientErrorException Excepcion a ejecutar
      */
@@ -237,6 +243,7 @@ public class PersonaClient {
      * GET /personas
      * @param <T> Tipo genérico
      * @param responseType javax.ws.rs.core.Response
+     * @param token String token recibido previamente al validar el usuario en la API. Irá en el header.
      * @return javax.ws.rs.core.Response resultados de la consulta
      * @throws ClientErrorException Excepcion a ejecutar
      */  
@@ -252,6 +259,7 @@ public class PersonaClient {
      * GET /personas
      * @param <T> Tipo genérico
      * @param responseType javax.ws.rs.core.Response
+     * @param token String token recibido previamente al validar el usuario en la API. Irá en el header.
      * @return javax.ws.rs.core.Response resultados de la consulta
      * @throws ClientErrorException Excepcion a ejecutar
      */

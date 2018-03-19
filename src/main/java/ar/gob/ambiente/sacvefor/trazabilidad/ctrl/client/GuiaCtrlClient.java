@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
 /**
@@ -57,11 +58,15 @@ public class GuiaCtrlClient {
      * PUT /guias/:id
      * @param requestEntity ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia Entidad Guía para encapsular los datos de la Guía que se quiere editar
      * @param id String id de la Guía que se quier editar
+     * @param token String token recibido previamente al validar el usuario en la API. Irá en el header.
      * @return javax.ws.rs.core.Response con el resultado de la operación
      * @throws ClientErrorException Excepcion a ejecutar
      */
-    public Response edit_XML(Object requestEntity, String id) throws ClientErrorException {
-        return webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Response.class);
+    public Response edit_XML(Object requestEntity, String id, String token) throws ClientErrorException {
+        return webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Response.class);
     }
 
     /**
@@ -69,11 +74,15 @@ public class GuiaCtrlClient {
      * PUT /guias/:id
      * @param requestEntity ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia Entidad Guía para encapsular los datos de la Guía que se quiere editar
      * @param id String id de la Guía que se quier editar
+     * @param token String token recibido previamente al validar el usuario en la API. Irá en el header.
      * @return javax.ws.rs.core.Response con el resultado de la operación
      * @throws ClientErrorException Excepcion a ejecutar
      */
-    public Response edit_JSON(Object requestEntity, String id) throws ClientErrorException {
-        return webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON), Response.class);
+    public Response edit_JSON(Object requestEntity, String id, String token) throws ClientErrorException {
+        return webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
+                .request(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON), Response.class);
     }
 
     /**
@@ -88,10 +97,11 @@ public class GuiaCtrlClient {
      * @param codigo String identificación del código único de la Guía
      * @param matricula String Matrícula del Vehículo de transporte
      * @param provincia String Provincia desde la cual se emitió la Guía
+     * @param token String token recibido previamente al validar el usuario en la API. Irá en el header.
      * @return Guia guia o guias obtenida/s según los parámetros enviados
      * @throws ClientErrorException Excepcion a ejecutar
      */ 
-    public <T> T findByQuery_XML(Class<T> responseType, String codigo, String matricula, String provincia) throws ClientErrorException {
+    public <T> T findByQuery_XML(Class<T> responseType, String codigo, String matricula, String provincia, String token) throws ClientErrorException {
         WebTarget resource = webTarget;
         if (codigo != null) {
             resource = resource.queryParam("codigo", codigo);
@@ -103,7 +113,9 @@ public class GuiaCtrlClient {
             resource = resource.queryParam("provincia", provincia);
         }
         resource = resource.path("query");
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .get(responseType);
     }
 
     /**
@@ -118,10 +130,11 @@ public class GuiaCtrlClient {
      * @param codigo String identificación del código único de la Guía
      * @param matricula String Matrícula del Vehículo de transporte
      * @param provincia String Provincia desde la cual se emitió la Guía
+     * @param token String token recibido previamente al validar el usuario en la API. Irá en el header.
      * @return Guia guia o guias obtenida/s según los parámetros enviados
      * @throws ClientErrorException Excepcion a ejecutar
      */ 
-    public <T> T findByQuery_JSON(Class<T> responseType, String codigo, String matricula, String provincia) throws ClientErrorException {
+    public <T> T findByQuery_JSON(Class<T> responseType, String codigo, String matricula, String provincia, String token) throws ClientErrorException {
         WebTarget resource = webTarget;
         if (codigo != null) {
             resource = resource.queryParam("codigo", codigo);
@@ -133,7 +146,9 @@ public class GuiaCtrlClient {
             resource = resource.queryParam("provincia", provincia);
         }
         resource = resource.path("query");
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .get(responseType);
     }
 
     /**
@@ -142,13 +157,16 @@ public class GuiaCtrlClient {
      * @param <T> Tipo genérico
      * @param responseType Entidad en la que se setearán los datos serializados obtenidos, en este caso será Guia
      * @param id String id de la Guía a obtener
+     * @param token String token recibido previamente al validar el usuario en la API. Irá en el header.
      * @return <T> Guia guía obtenida según el id remitido
      * @throws ClientErrorException Excepcion a ejecutar
      */
-    public <T> T find_XML(Class<T> responseType, String id) throws ClientErrorException {
+    public <T> T find_XML(Class<T> responseType, String id, String token) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .get(responseType);
     }
     
     /**
@@ -157,13 +175,16 @@ public class GuiaCtrlClient {
      * @param <T> Tipo genérico
      * @param responseType Entidad en la que se setearán los datos serializados obtenidos, en este caso será Guia
      * @param id String id de la Guía a obtener
+     * @param token String token recibido previamente al validar el usuario en la API. Irá en el header.
      * @return <T> Control guía obtenida según el id remitido
      * @throws ClientErrorException Excepcion a ejecutar
      */
-    public <T> T find_JSON(Class<T> responseType, String id) throws ClientErrorException {
+    public <T> T find_JSON(Class<T> responseType, String id, String token) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .get(responseType);
     }
 
     public <T> T findRange_XML(Class<T> responseType, String from, String to) throws ClientErrorException {
@@ -182,22 +203,28 @@ public class GuiaCtrlClient {
      * Método para crear una Guía para su control en el Componente de control y verificación. En formato XML
      * POST /guias
      * @param requestEntity ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia Entidad Guía para encapsular los datos de la Guía que se quiere registrar
+     * @param token String token recibido previamente al validar el usuario en la API. Irá en el header.
      * @return javax.ws.rs.core.Response con el resultado de la operación que incluye la url de acceso a la Guía creada mediante GET
      * @throws ClientErrorException Excepcion a ejecutar
      */
-    public Response create_XML(Object requestEntity) throws ClientErrorException {
-        return webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Response.class);
+    public Response create_XML(Object requestEntity, String token) throws ClientErrorException {
+        return webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Response.class);
     }
 
     /**
      * Método para crear una Guía para su control en el Componente de control y verificación. En formato JSON
      * POST /guias
      * @param requestEntity ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia Entidad Guía para encapsular los datos de la Guía que se quiere registrar
+     * @param token String token recibido previamente al validar el usuario en la API. Irá en el header.
      * @return javax.ws.rs.core.Response con el resultado de la operación que incluye la url de acceso a la Guía creada mediante GET
      * @throws ClientErrorException Excepcion a ejecutar
      */    
-    public Response create_JSON(Object requestEntity) throws ClientErrorException {
-        return webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON), Response.class);
+    public Response create_JSON(Object requestEntity, String token) throws ClientErrorException {
+        return webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON), Response.class);
     }
 
     /**
@@ -205,12 +232,15 @@ public class GuiaCtrlClient {
      * GET /guias
      * @param <T> Tipo genérico
      * @param responseType javax.ws.rs.core.Response
+     * @param token String token recibido previamente al validar el usuario en la API. Irá en el header.
      * @return javax.ws.rs.core.Response resultados de la consulta
      * @throws ClientErrorException Excepcion a ejecutar
      */    
-    public <T> T findAll_XML(Class<T> responseType) throws ClientErrorException {
+    public <T> T findAll_XML(Class<T> responseType, String token) throws ClientErrorException {
         WebTarget resource = webTarget;
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .get(responseType);
     }
 
     /**
@@ -218,12 +248,15 @@ public class GuiaCtrlClient {
      * GET /guias
      * @param <T> Tipo genérico
      * @param responseType javax.ws.rs.core.Response
+     * @param token String token recibido previamente al validar el usuario en la API. Irá en el header.
      * @return javax.ws.rs.core.Response resultados de la consulta
      * @throws ClientErrorException Excepcion a ejecutar
      */        
-    public <T> T findAll_JSON(Class<T> responseType) throws ClientErrorException {
+    public <T> T findAll_JSON(Class<T> responseType, String token) throws ClientErrorException {
         WebTarget resource = webTarget;
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .get(responseType);
     }
 
     /**

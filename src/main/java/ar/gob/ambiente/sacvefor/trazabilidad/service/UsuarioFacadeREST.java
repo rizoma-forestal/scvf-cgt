@@ -66,7 +66,7 @@ public class UsuarioFacadeREST {
     /**
      * @api {post} /usuarios Registrar un Usuario
      * @apiExample {curl} Ejemplo de uso:
-     *     curl -X POST -d [PATH_SERVER]/rue/rest/usuarios -H "authorization: xXyYvWzZ"
+     *     curl -X POST -d [PATH_SERVER]/trazabilidad/rest/usuarios -H "authorization: xXyYvWzZ"
      * @apiVersion 1.0.0
      * @apiName PostUsuario
      * @apiGroup Usuario
@@ -75,7 +75,7 @@ public class UsuarioFacadeREST {
      *     {
      *       "Authorization": "xXyYvWzZ"
      *     } 
-     * @apiParam {ar.gob.ambiente.sacvefor.servicios.trazabilidad.Usuario} entity Objeto java del paquete paqRue.jar con los datos del Usuario a registrar
+     * @apiParam {ar.gob.ambiente.sacvefor.servicios.trazabilidad.Usuario} entity Objeto java del paquete trazabilidad.jar con los datos del Usuario a registrar
      * @apiParamExample {java} Ejemplo de Usuario
      *      {"entity": {
      *          "id": "0",
@@ -99,7 +99,7 @@ public class UsuarioFacadeREST {
      *     HTTP/1.1 201 OK
      *     {
      *       {
-     *          "Location": "[PATH_SERVER]/rue/rest/usuarios/:id"
+     *          "Location": "[PATH_SERVER]/trazabilidad/rest/usuarios/:id"
      *       }
      *     }
      *
@@ -107,7 +107,7 @@ public class UsuarioFacadeREST {
      * @apiErrorExample Respuesta de Error:
      *     HTTP/1.1 400 Not Found
      *     {
-     *       "error": "Hubo un error procesando la inserción en el Registro Unico"
+     *       "error": "Hubo un error procesando la inserción en el Componente de Trazabilidad"
      *     }
      */
     @POST
@@ -167,7 +167,7 @@ public class UsuarioFacadeREST {
     /**
      * @api {get} /usuarios/:id Ver un Usuario
      * @apiExample {curl} Ejemplo de uso:
-     *     curl -X GET -d [PATH_SERVER]/rue/rest/usuarios/2 -H "authorization: xXyYvWzZ"
+     *     curl -X GET -d [PATH_SERVER]/trazabilidad/rest/usuarios/2 -H "authorization: xXyYvWzZ"
      * @apiVersion 1.0.0
      * @apiName GetUsuario
      * @apiGroup Usuario
@@ -216,7 +216,7 @@ public class UsuarioFacadeREST {
     /**
      * @api {get} /usuarios Ver todas los usuarios
      * @apiExample {curl} Ejemplo de uso:
-     *     curl -X GET -d [PATH_SERVER]/rue/rest/usuarios -H "authorization: xXyYvWzZ"
+     *     curl -X GET -d [PATH_SERVER]/trazabilidad/rest/usuarios -H "authorization: xXyYvWzZ"
      * @apiVersion 1.0.0
      * @apiName GetUsuarios
      * @apiGroup Usuario
@@ -279,7 +279,7 @@ public class UsuarioFacadeREST {
     /**
      * @api {get} /usuarios/query?juris=:juris,cuit=:cuit Ver Usurio según parámetros.
      * @apiExample {curl} Ejemplo de uso:
-     *     curl -X GET -d [PATH_SERVER]/rue/rest/usuarios/query?juris=JUJUY -H "authorization: xXyYvWzZ"
+     *     curl -X GET -d [PATH_SERVER]/trazabilidad/rest/usuarios/query?juris=JUJUY -H "authorization: xXyYvWzZ"
      * @apiVersion 1.0.0
      * @apiName GetUsuarioQuery
      * @apiGroup Usuario

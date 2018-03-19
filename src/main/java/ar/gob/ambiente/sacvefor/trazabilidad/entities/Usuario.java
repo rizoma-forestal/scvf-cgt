@@ -97,6 +97,13 @@ public class Usuario implements Serializable {
      * Variable privada: Condición de habilitado de la Persona
      */
     private boolean habilitado;
+    
+    /**
+     * Variable privada: usuario de la API que operó el registro del usuario local
+     */
+    @ManyToOne
+    @JoinColumn(name="usuarioapi_id", nullable=true)
+    private UsuarioApi usuarioApi;    
 
     public String getJurisdiccion() {
         return jurisdiccion;
@@ -178,10 +185,6 @@ public class Usuario implements Serializable {
     public boolean isHabilitado() {
         return habilitado;
     }
-
-    @ManyToOne
-    @JoinColumn(name="usuarioapi_id", nullable=true)
-    private UsuarioApi usuarioApi;   
     
     @XmlTransient
     public UsuarioApi getUsuarioApi() {

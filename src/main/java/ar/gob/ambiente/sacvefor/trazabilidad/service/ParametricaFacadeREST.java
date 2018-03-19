@@ -46,7 +46,7 @@ public class ParametricaFacadeREST {
     /**
      * @api {post} /parametricas Registrar una Paramétrica
      * @apiExample {curl} Ejemplo de uso:
-     *     curl -X POST -d [PATH_SERVER]/rue/rest/parametricas -H "authorization: xXyYvWzZ"
+     *     curl -X POST -d [PATH_SERVER]/trazabilidad/rest/parametricas -H "authorization: xXyYvWzZ"
      * @apiVersion 1.0.0
      * @apiName PostParametrica
      * @apiGroup Parametrica
@@ -55,7 +55,7 @@ public class ParametricaFacadeREST {
      *     {
      *       "Authorization": "xXyYvWzZ"
      *     } 
-     * @apiParam {ar.gob.ambiente.sacvefor.servicios.trazabilidad.Parametrica} entity Objeto java del paquete paqRue.jar con los datos de la paramétrica a registrar
+     * @apiParam {ar.gob.ambiente.sacvefor.servicios.trazabilidad.Parametrica} entity Objeto java del paquete paqTrazabilidad.jar con los datos de la paramétrica a registrar
      * @apiParamExample {java} Ejemplo de Parametrica
      *      {"entity": {
      *          "id": "0",
@@ -71,7 +71,7 @@ public class ParametricaFacadeREST {
      *     HTTP/1.1 201 OK
      *     {
      *       {
-     *          "Location": "[PATH_SERVER]/rue/rest/parametricas/:id"
+     *          "Location": "[PATH_SERVER]/trazabilidad/rest/parametricas/:id"
      *       }
      *     }
      *
@@ -109,7 +109,7 @@ public class ParametricaFacadeREST {
     /**
      * @api {put} /parametricas/:id Actualizar una paramétrica existente
      * @apiExample {curl} Ejemplo de uso:
-     *     curl -X PUT -d [PATH_SERVER]/rue/rest/parametricas/1 -H "authorization: xXyYvWzZ"
+     *     curl -X PUT -d [PATH_SERVER]/trazabilidad/rest/parametricas/1 -H "authorization: xXyYvWzZ"
      * @apiVersion 1.0.0
      * @apiName PutParametrica
      * @apiGroup Parametrica
@@ -118,7 +118,7 @@ public class ParametricaFacadeREST {
      *     {
      *       "Authorization": "xXyYvWzZ"
      *     } 
-     * @apiParam {ar.gob.ambiente.sacvefor.servicios.trazabilidad.Parametrica} entity Objeto java del paquete paqRue.jar con los datos de la paramétrica a actualizar
+     * @apiParam {ar.gob.ambiente.sacvefor.servicios.trazabilidad.Parametrica} entity Objeto java del paquete paqTrazabilidad.jar con los datos de la paramétrica a actualizar
      * @apiParam {Long} Id Identificador único de la Parametrica a actualizar
      * @apiParamExample {java} Ejemplo de Parametrica
      *      {"entity": {
@@ -171,7 +171,7 @@ public class ParametricaFacadeREST {
     /**
      * @api {get} /parametricas/:id Ver una Parametrica
      * @apiExample {curl} Ejemplo de uso:
-     *     curl -X GET -d [PATH_SERVER]/rue/rest/parametricas/2 -H "authorization: xXyYvWzZ"
+     *     curl -X GET -d [PATH_SERVER]/trazabilidad/rest/parametricas/2 -H "authorization: xXyYvWzZ"
      * @apiVersion 1.0.0
      * @apiName GetParametrica
      * @apiGroup Parametrica
@@ -214,7 +214,7 @@ public class ParametricaFacadeREST {
     /**
      * @api {get} /parametricas Ver todas las Parametricas
      * @apiExample {curl} Ejemplo de uso:
-     *     curl -X GET -d [PATH_SERVER]/rue/rest/parametricas -H "authorization: xXyYvWzZ"
+     *     curl -X GET -d [PATH_SERVER]/trazabilidad/rest/parametricas -H "authorization: xXyYvWzZ"
      * @apiVersion 1.0.0
      * @apiName GetParametricas
      * @apiGroup Parametrica
@@ -261,7 +261,7 @@ public class ParametricaFacadeREST {
     /**
      * @api {get} /parametricas/:id/usuarios Ver las paramétricas
      * @apiExample {curl} Ejemplo de uso:
-     *     curl -X GET -d [PATH_SERVER]/rue/rest/parametricas/2/usuarios -H "authorization: xXyYvWzZ"
+     *     curl -X GET -d [PATH_SERVER]/trazabilidad/rest/parametricas/2/usuarios -H "authorization: xXyYvWzZ"
      * @apiVersion 1.0.0
      * @apiName GetUsuarios
      * @apiGroup Parametrica
