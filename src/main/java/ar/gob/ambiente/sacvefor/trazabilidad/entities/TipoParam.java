@@ -54,6 +54,9 @@ public class TipoParam implements Serializable {
      */
     private boolean habilitado;
     
+    /**
+     * Constructor
+     */    
     public TipoParam(){
         parametricas = new ArrayList<>();
     }

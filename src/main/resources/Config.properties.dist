@@ -9,11 +9,13 @@ UrlCtrlVerif=/ctrlVerif/rest
 # Usuarios de acceso a API's REST:
 # UsRestTax y UsRestTerr => sacvefor (para los servicios de taxonomías y territorial)
 # UsRestRue => scvf-traz (para el RUE)
-# UsRestCtrl => scvf-ctrl (para CTRL)
+# UsRestCtrl => scvf-traz (para CTRL)
+# UsRestCgl => scvf-traz (para CGL)
 UsRestTax=sacvefor
 UsRestTerr=sacvefor
-UsRestRue=admin [Provincia]
-UsRestCtrl=scvf-ctrl
+UsRestRue=scvf-traz
+UsRestCtrl=scvf-traz
+UsRestCgl=scvf-traz
 # Tiempo de vigencia del token recibido
 TimeToken=3600000
 

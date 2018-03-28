@@ -1,5 +1,5 @@
 
-package ar.gob.ambiente.sacvefor.trazabilidad.ctrl.client;
+package ar.gob.ambiente.sacvefor.trazabilidad.cgl.client;
 
 import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
@@ -7,7 +7,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 
 /**
- * Cliente REST Jersey generado para el recurso UsuarioApiResource de la API sacvefor-controlVerificacion<br>
+ * Cliente REST Jersey generado para el recurso UsuarioApiResource de la API sacvefor-gestionLocal de la Provincia que corresponda<br>
  * [usuarioapi]<br>
  * USAGE:
  * <pre>
@@ -32,18 +32,18 @@ public class UsuarioApiClient {
     private Client client;
     
     /**
-     * Variable privada estática y final: String url general de acceso al servicio.
-     * A partir de datos configurados en archivo de propiedades
+     * Variable privada: String url general de acceso al servicio según el componente local al cual se consulta.
      */
-    private static final String BASE_URI = ResourceBundle.getBundle("/Config").getString("ServerServicios") + "/"
-            + "" + ResourceBundle.getBundle("/Config").getString("UrlCtrlVerif");    
+    private String base_uri;  
 
     /**
      * Constructor que instancia el cliente y el webTarget
-     */    
-    public UsuarioApiClient() {
+     * @param baseUri String url de acceso a la API del componente local que corresponda
+     */  
+    public UsuarioApiClient(String baseUri) {
+        base_uri = baseUri;
         client = javax.ws.rs.client.ClientBuilder.newClient();
-        webTarget = client.target(BASE_URI).path("usuarioapi");
+        webTarget = client.target(base_uri).path("usuarioapi");
     }
 
     /**

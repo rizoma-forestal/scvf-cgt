@@ -122,22 +122,46 @@ public class MbGuiaCierre implements Serializable{
      */
     private EstadoGuiaLocalClient estadoGuiaLocClient;
     
+    /**
+     * Variable privada: UsuarioApiClient Cliente para la API REST de Gestión local
+     */    
+    private ar.gob.ambiente.sacvefor.trazabilidad.cgl.client.UsuarioApiClient usuarioClientCgl;
+    
+    /**
+     * Variable privada: Token obtenido al validar el usuario de la API de Gestión local
+     */     
+    private Token tokenCgl;
+    
+    /**
+     * Variable privada: Token en formato String del obtenido al validar el usuario de la API de Gestión local
+     */ 
+    private String strTokenCgl;
+    
     // campos para la API CCV
     /**
      * Variable privada: GuiaCtrlClient Cliente para la API REST de Control y Verificación
      */
     private GuiaCtrlClient guiaCtrlClient;
     
+    /**
+     * Variable privada: Cliente para la API de UsuarioAPI de control y verificación
+     */
     private ar.gob.ambiente.sacvefor.trazabilidad.ctrl.client.UsuarioApiClient usClientCtrl;
+    
+    /**
+     * Variable privada: token recibido al autenticar el usuario de la API
+     */
     private String strTokenCtrl;
+    
+    /**
+     * Variable privada: Objeto para gestionar el token
+     */
     private Token tokenCtrl;    
     
     /**
      * Variable privada: ParamCtrlClient Cliente para la API REST de Control y Verificación
      */
     private ParamCtrlClient paramCtrlClient;
-    
-    
     
     // campos y recursos para el envío de correos al usuario
     /**
@@ -305,12 +329,30 @@ public class MbGuiaCierre implements Serializable{
     public void cargarGuiasLocales() {
         if(provinciaSelected.getId() != null){
             try{
+                // instancio el cliente para la selección de la Guía, obtengo el token si no está seteado o está vencido
+                if(tokenCgl == null){
+                    getTokenCgl();
+                }else try {
+                    if(!tokenCgl.isVigente()){
+                        getTokenCgl();
+                    }
+                } catch (IOException ex) {
+                    LOG.fatal("Hubo un error obteniendo la vigencia del token de Gestión local. " + ex.getMessage());
+                }                
                 // instancio el cliente
                 guiaLocalClient = new GuiaLocalClient(provinciaSelected.getUrl());
                 // obtngo el listado
                 GenericType<List<ar.gob.ambiente.sacvefor.servicios.cgl.Guia>> gType = new GenericType<List<ar.gob.ambiente.sacvefor.servicios.cgl.Guia>>() {};
-                Response response = guiaLocalClient.findByQuery_JSON(Response.class, null, null, String.valueOf(usLogueado.getLogin()));
-                lstGuiasLocal = response.readEntity(gType);
+                Response response = guiaLocalClient.findByQuery_JSON(Response.class, null, null, String.valueOf(usLogueado.getLogin()), tokenCgl.getStrToken());
+                List<ar.gob.ambiente.sacvefor.servicios.cgl.Guia> lstGuiasTemp = new ArrayList<>();
+                lstGuiasTemp = response.readEntity(gType);
+                lstGuiasLocal = new ArrayList<>();
+                Date hoy = new Date(System.currentTimeMillis());
+                for(ar.gob.ambiente.sacvefor.servicios.cgl.Guia g : lstGuiasTemp){
+                    if(!g.getFechaVencimiento().before(hoy)){
+                        lstGuiasLocal.add(g);
+                    }
+                }
                 guiaLocalClient.close();
             }catch(ClientErrorException ex){
                 // muestro un mensaje al usuario
@@ -328,12 +370,21 @@ public class MbGuiaCierre implements Serializable{
      * Obtiene los items de la Guía mediante una consulta a la API del componente local emisor
      */
     public void prepareView(){
-        // instancio el cliente para buscar los items
+        // instancio el cliente para la selección de la Guía, obtengo el token si no está seteado o está vencido
+        if(tokenCgl == null){
+            getTokenCgl();
+        }else try {
+            if(!tokenCgl.isVigente()){
+                getTokenCgl();
+            }
+        } catch (IOException ex) {
+            LOG.fatal("Hubo un error obteniendo la vigencia del token de Gestión local. " + ex.getMessage());
+        }   
         guiaLocalClient = new GuiaLocalClient(provinciaSelected.getUrl());
         lstItemLocales = new ArrayList<>();
         // obtengo el listado
         GenericType<List<ar.gob.ambiente.sacvefor.servicios.cgl.ItemProductivo>> gType = new GenericType<List<ar.gob.ambiente.sacvefor.servicios.cgl.ItemProductivo>>() {};
-        Response response = guiaLocalClient.findItemsByGuia_JSON(Response.class, String.valueOf(guiaLocalSelected.getId()));
+        Response response = guiaLocalClient.findItemsByGuia_JSON(Response.class, String.valueOf(guiaLocalSelected.getId()), tokenCgl.getStrToken());
         lstItemLocales = response.readEntity(gType);
         guiaLocalClient.close();
         view = true;
@@ -403,10 +454,20 @@ public class MbGuiaCierre implements Serializable{
 
             // actualizo la Guía de Producción local
             List<ar.gob.ambiente.sacvefor.servicios.cgl.EstadoGuia> lstEstados;
+            // instancio el cliente para la selección del estado de Guía, obtengo el token si no está seteado o está vencido
+            if(tokenCgl == null){
+                getTokenCgl();
+            }else try {
+                if(!tokenCgl.isVigente()){
+                    getTokenCgl();
+                }
+            } catch (IOException ex) {
+                LOG.fatal("Hubo un error obteniendo la vigencia del token de Gestión local. " + ex.getMessage());
+            }   
             estadoGuiaLocClient = new EstadoGuiaLocalClient(provinciaSelected.getUrl());
             // obtengo el estado de cerrada 
             GenericType<List<ar.gob.ambiente.sacvefor.servicios.cgl.EstadoGuia>> gTypeEstado = new GenericType<List<ar.gob.ambiente.sacvefor.servicios.cgl.EstadoGuia>>() {};
-            Response responseCgl = estadoGuiaLocClient.findByQuery_JSON(Response.class, ResourceBundle.getBundle("/Config").getString("EstCerrada"));
+            Response responseCgl = estadoGuiaLocClient.findByQuery_JSON(Response.class, ResourceBundle.getBundle("/Config").getString("EstCerrada"), tokenCgl.getStrToken());
             lstEstados = responseCgl.readEntity(gTypeEstado);
             estadoGuiaLocClient.close();
             if(!lstEstados.isEmpty()){
@@ -414,8 +475,18 @@ public class MbGuiaCierre implements Serializable{
                 // seteo la fecha de cierre
                 guiaLocalSelected.setFechaCierre(fechaAlta);
                 // actualizo
+                // instancio el cliente para la selección del estado de Guía, obtengo el token si no está seteado o está vencido
+                if(tokenCgl == null){
+                    getTokenCgl();
+                }else try {
+                    if(!tokenCgl.isVigente()){
+                        getTokenCgl();
+                    }
+                } catch (IOException ex) {
+                    LOG.fatal("Hubo un error obteniendo la vigencia del token de Gestión local. " + ex.getMessage());
+                }   
                 guiaLocalClient = new GuiaLocalClient(provinciaSelected.getUrl());
-                responseCgl = guiaLocalClient.edit_JSON(guiaLocalSelected, String.valueOf(guiaLocalSelected.getId()));
+                responseCgl = guiaLocalClient.edit_JSON(guiaLocalSelected, String.valueOf(guiaLocalSelected.getId()), tokenCgl.getStrToken());
                 guiaLocalClient.close();
                 // respondo según el mensaje recibido
                 if(responseCgl.getStatus() == 200){
@@ -457,6 +528,17 @@ public class MbGuiaCierre implements Serializable{
                             // seteo la Guía solo con los valores que necesito para editarla
                             guiaCtrol.setId(idGuiaCtrl);
                             guiaCtrol.setEstado(lstParmEstados.get(0));
+                            
+                            // obtengo el token si no está seteado o está vencido
+                            if(tokenCtrl == null){
+                                getTokenCtrl();
+                            }else try {
+                                if(!tokenCtrl.isVigente()){
+                                    getTokenCtrl();
+                                }
+                            } catch (IOException ex) {
+                                logger.log(Level.SEVERE, "{0} - {1}", new Object[]{"Hubo un error obteniendo la vigencia del token", ex.getMessage()});
+                            }
                             responseCgl = guiaCtrlClient.edit_JSON(guiaCtrol, String.valueOf(guiaCtrol.getId()), tokenCtrl.getStrToken());
                             if(responseCgl.getStatus() == 200){
                                 // se completaron todas las operaciones
@@ -601,4 +683,23 @@ public class MbGuiaCierre implements Serializable{
             System.out.println("Hubo un error obteniendo el token: " + ex.getMessage());
         }
     }     
+    
+    /**
+     * Método privado que obtiene y setea el token para autentificarse ante la API rest de Gestión local para la provincia que corresponda
+     * Crea el campo de tipo Token con la clave recibida y el momento de la obtención.
+     * Utilizado por cargarGuiasLocales(), prepareView() y aceptarGuia()
+     */
+    private void getTokenCgl(){
+        try{
+            usuarioClientCgl = new ar.gob.ambiente.sacvefor.trazabilidad.cgl.client.UsuarioApiClient(provinciaSelected.getUrl());
+            Response responseUs = usuarioClientCgl.authenticateUser_JSON(Response.class, ResourceBundle.getBundle("/Config").getString("UsRestCgl"));
+            MultivaluedMap<String, Object> headers = responseUs.getHeaders();
+            List<Object> lstHeaders = headers.get("Authorization");
+            strTokenCgl = (String)lstHeaders.get(0); 
+            tokenCgl = new Token(strTokenCgl, System.currentTimeMillis());
+            usuarioClientCgl.close();
+        }catch(ClientErrorException ex){
+            System.out.println("Hubo un error obteniendo el token para la API Gestión local: " + ex.getMessage());
+        }
+    }    
 }

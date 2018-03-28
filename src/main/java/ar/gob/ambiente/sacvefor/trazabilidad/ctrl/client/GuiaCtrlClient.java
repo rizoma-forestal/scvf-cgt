@@ -86,7 +86,7 @@ public class GuiaCtrlClient {
     }
 
     /**
-     * Método para obtener uno o más Registro/s de Control realizado/s según un parámetro que podrá ser el código, 
+     * Método para obtener uno o más Registros de Control realizados a una o más guías según un parámetro que podrá ser el código de la Guía, 
      * la matrícula del transporte o la Provincia de emisión. Solo se podrá pasar el valor de un parámetro, los restantes deberán ser nulos.
      * En formato XML
      * GET /guias/query?codigo=:codigo
@@ -119,8 +119,8 @@ public class GuiaCtrlClient {
     }
 
     /**
-     * Método para obtener uno o más Registro/s de Control realizado/s según un parámetro que podrá ser la localidad, 
-     * la matrícula del transporte o el destino. Solo se podrá pasar el valor de un parámetro, los restantes deberán ser nulos.
+     * Método para obtener uno o más Registros de Control realizados a una o más guías según un parámetro que podrá ser el código de la Guía, 
+     * la matrícula del transporte o la Provincia de emisión. Solo se podrá pasar el valor de un parámetro, los restantes deberán ser nulos.
      * En formato JSON
      * GET /guias/query?codigo=:codigo
      * GET /guias/query?matricula=:matricula

@@ -17,7 +17,7 @@ public abstract class AbstractFacade<T> {
 
     /**
      * Constructor, recibe la clase para gestionar su acceso a datos
-     * @param entityClass 
+     * @param entityClass Class<T> Entidad para la cual se gestionará su acceso a datos
      */ 
     public AbstractFacade(Class<T> entityClass) {
         this.entityClass = entityClass;
