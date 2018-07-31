@@ -27,12 +27,16 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 public class SubProducto implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    /**
+     * Variable privada: Identificador único
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     /**
-     * Clase en la que se comercializa el SubProducto
+     * Variable privada: Clase en la que se comercializa el SubProducto
      * No será auditada
      */
     @Audited(targetAuditMode = NOT_AUDITED)
@@ -42,35 +46,38 @@ public class SubProducto implements Serializable {
     private ProductoClase clase;
     
     /**
-     * Indica la cantidad del SubProducto elaborable por unidad de Producto
+     * Variable privada: cantidad del SubProducto elaborable por unidad de Producto
      */
     private float cantXProd;
     
     /**
-     * Factor de transformación del SubProducto, en caso que pueda ser transformado
+     * Variable privada: Factor de transformación del SubProducto, en caso que pueda ser transformado
      * el valor será menor de 1
      */
     @Column(nullable=true)
     private float factorTransformacion;
     
     /**
-     * Equivalencia en Kg. de la Unidad de medida de la Clase del SubProducto
+     * Variable privada: Equivalencia en Kg. de la Unidad de medida de la Clase del SubProducto
      */
     private float equivalKg;    
     
     /**
-     * Producto del que se generará el SubProducto
+     * Variable privada: Producto del que se generará el SubProducto
      */
     @ManyToOne
     @JoinColumn(name="producto_id", nullable=false)
     @NotNull(message = "Debe existir un Producto")    
     private Producto producto;  
     
+    /**
+     * Variable privada: Estado de habilitación
+     */
     private boolean habilitado;    
     
     /**
-     * Campo que mostrará la fecha de las revisiones
-     * No se persiste
+     * Variable privada no persistida: Muestra la fecha de la revisión 
+     * para cada item del listado de revisiones de un SubProducto.
      */
     @Transient
     private Date fechaRevision;          

@@ -15,22 +15,32 @@ import javax.persistence.Query;
 @Stateless
 public class EstadoGuiaFacade extends AbstractFacade<EstadoGuia> {
 
+    /**
+     * Variable privada: EntityManager al que se le indica la unidad de persistencia mediante la cual accederá a la base de datos
+     */
     @PersistenceContext(unitName = "sacvefor-gestionTrazabilidadPU")
     private EntityManager em;
 
+    /**
+     * Método que implementa el abstracto para la obtención del EntityManager
+     * @return EntityManager para acceder a datos
+     */ 
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
-
+    
+    /**
+     * Constructor
+     */
     public EstadoGuiaFacade() {
         super(EstadoGuia.class);
     }
     
     /**
      * Método para validar la existencia de un EstadoGuia en función de su nombre
-     * @param nombre
-     * @return 
+     * @param nombre String nombre del estado de guías
+     * @return EstadoGuia Estado de guía solicitado
      */
     public EstadoGuia getExistente(String nombre) {
         List<EstadoGuia> lstEstados;
@@ -50,7 +60,7 @@ public class EstadoGuiaFacade extends AbstractFacade<EstadoGuia> {
     
     /**
      * Método sobreescrito que lista los EstadoGuia ordenadas por nombre
-     * @return 
+     * @return List<EstadoGuia> listado de los estados de guías ordenados
      */
     @Override
     public List<EstadoGuia> findAll(){
@@ -64,8 +74,8 @@ public class EstadoGuiaFacade extends AbstractFacade<EstadoGuia> {
     /**
      * Mátodo que solo devuelve las EstadoGuia habilitados, menos el acutal.
      * Para poblar combos de selección de cambios de Estado.
-     * @param nombre
-     * @return 
+     * @param nombre String nombre del estado que no se incluye
+     * @return List<EstadoGuia> lisado de los estados restantes
      */
     public List<EstadoGuia> getHabilitadosSinUno(String nombre){
         em = getEntityManager();

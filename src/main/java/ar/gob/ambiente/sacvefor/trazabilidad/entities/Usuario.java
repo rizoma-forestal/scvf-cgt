@@ -25,12 +25,16 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Usuario implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    /**
+     * Variable privada: Identificador único
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     /**
-     * Guarda el rol al que pertenece el usuario
+     * Variable privada: Guarda el rol al que pertenece el usuario
      */
     @ManyToOne
     @JoinColumn(name="rol_id", nullable=false)
@@ -38,17 +42,17 @@ public class Usuario implements Serializable {
     private Parametrica rol;
     
     /**
-     * Guarda el nombre de la Provincia del domicilio de la Persona en el RUE
+     * Variable privada: Guarda el nombre de la Provincia del domicilio de la Persona en el RUE
      */
     private String jurisdiccion;    
     
     /**
-     * Será el CUIT del usuario que oficiará como nombre de usuario
+     * Variable privada: CUIT del usuario que oficiará como nombre de usuario
      */
     private Long login;
     
     /**
-     * Nombre y apellido del usuario
+     * Variable privada: Nombre y apellido del usuario
      */
     @Column (nullable=false, length=50)
     @NotNull(message = "El campo nombreCompleto no puede ser nulo")
@@ -56,7 +60,7 @@ public class Usuario implements Serializable {
     private String nombreCompleto;
     
     /**
-     * Correo electrónico válido del usuario al que se le remitrirán las credenciales de acceso
+     * Variable privada: Correo electrónico válido del usuario al que se le remitrirán las credenciales de acceso
      */
     @Column (nullable=false, length=50)
     @NotNull(message = "El campo email no puede ser nulo")
@@ -64,7 +68,7 @@ public class Usuario implements Serializable {
     private String email;    
     
     /**
-     * Clave encriptada que generará el sistema automáticamente la primera vez y 
+     * Variable privada: Clave encriptada que generará el sistema automáticamente la primera vez y 
      * solicitará al usuario su cambio cuando realice la primera sesión.
      */
     @Column (length=100)
@@ -72,27 +76,34 @@ public class Usuario implements Serializable {
     private String clave;
     
     /**
-     * Fecha de alta del usuario
+     * Variable privada: Fecha de alta del usuario
      */
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date fechaAlta;
     
     /**
-     * Fecha de la última modificación de los datos del usuario
+     * Variable privada: Fecha de la última modificación de los datos del usuario
      */
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date fechaModif;    
     
     /**
-     * Fecha de la última vez que el usuario registra una sesión en la aplicación
+     * Variable privada: Fecha de la última vez que el usuario registra una sesión en la aplicación
      */
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date fechaUltimoLogin;
     
     /**
-     * Estado de habilitado
+     * Variable privada: Condición de habilitado de la Persona
      */
     private boolean habilitado;
+    
+    /**
+     * Variable privada: usuario de la API que operó el registro del usuario local
+     */
+    @ManyToOne
+    @JoinColumn(name="usuarioapi_id", nullable=true)
+    private UsuarioApi usuarioApi;    
 
     public String getJurisdiccion() {
         return jurisdiccion;
@@ -174,7 +185,16 @@ public class Usuario implements Serializable {
     public boolean isHabilitado() {
         return habilitado;
     }
+    
+    @XmlTransient
+    public UsuarioApi getUsuarioApi() {
+        return usuarioApi;
+    }
 
+    public void setUsuarioApi(UsuarioApi usuarioApi) {
+        this.usuarioApi = usuarioApi;
+    }    
+    
     public void setHabilitado(boolean habilitado) {
         this.habilitado = habilitado;
     }

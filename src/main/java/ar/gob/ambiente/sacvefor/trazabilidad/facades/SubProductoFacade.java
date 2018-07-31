@@ -21,23 +21,33 @@ import org.hibernate.envers.AuditReaderFactory;
 @Stateless
 public class SubProductoFacade extends AbstractFacade<SubProducto> {
 
+    /**
+     * Variable privada: EntityManager al que se le indica la unidad de persistencia mediante la cual accederá a la base de datos
+     */
     @PersistenceContext(unitName = "sacvefor-gestionTrazabilidadPU")
     private EntityManager em;
 
+    /**
+     * Método que implementa el abstracto para la obtención del EntityManager
+     * @return EntityManager para acceder a datos
+     */ 
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
 
+    /**
+     * Constructor
+     */
     public SubProductoFacade() {
         super(SubProducto.class);
     }
     
     /**
      * Método para validar la existencia de un Subproducto según el Producto del que deriva y la Clase
-     * @param clase : Clase cuya existencia se va a validar junto con el Producto
-     * @param producto : Producto del que el Subproducto buscaro de un derivado
-     * @return 
+     * @param clase ProductoClase Clase cuya existencia se va a validar junto con el Producto
+     * @param producto Producto producto del que el Subproducto buscado es un derivado
+     * @return SubProducto sub producto solicitado
      */
     public SubProducto getExistente(ProductoClase clase, Producto producto) {
         List<SubProducto> lstSubProductos;
@@ -59,7 +69,7 @@ public class SubProductoFacade extends AbstractFacade<SubProducto> {
     
     /**
      * Método sobreescrito que lista los SubProductos ordenadas por el nombre vulgar del Producto del que deriva
-     * @return 
+     * @return List<SubProducto> listado de sub productos ordenados por el nombre vulgar de la especie
      */
     @Override
     public List<SubProducto> findAll(){
@@ -73,7 +83,7 @@ public class SubProductoFacade extends AbstractFacade<SubProducto> {
     /**
      * Mátodo que solo devuelve los SubProductos habilitados.
      * Para poblar combos de selección.
-     * @return 
+     * @return List<SubProducto> listado de sub productos habilitados ordenados por el nombre vulgar de la especie
      */
     public List<SubProducto> getHabilitados(){
         em = getEntityManager();
@@ -86,8 +96,8 @@ public class SubProductoFacade extends AbstractFacade<SubProducto> {
     
     /**
      * Método que devuelve todos los Sub productos para de una misma Especie
-     * @param idEspecieTax : Id de la Especie a buscar
-     * @return 
+     * @param idEspecieTax Long Id de la Especie a buscar
+     * @return List<SubProducto> listado de sub productos habilitados ordenados por el nombre vulgar pertenecientes a la especie remitida
      */
     public List<SubProducto> getByEspecieLocal(Long idEspecieTax){
         em = getEntityManager();
@@ -102,9 +112,9 @@ public class SubProductoFacade extends AbstractFacade<SubProducto> {
     
     /**
      * Método para obtener todas las revisiones de la entidad
-     * @param clase : Clase que junto a la Especie definen el Producto cuyas revisiones se busca
-     * @param producto : Producto que genera al Subproducto como derivado
-     * @return 
+     * @param clase ProductoClase Clase que junto a la Especie definen el Producto cuyas revisiones se busca
+     * @param producto Producto Producto que genera al Subproducto como derivado
+     * @return List<SubProducto> listado de las revisiones del sub producto requerido 
      */
     public List<SubProducto> findRevisions(ProductoClase clase, Producto producto){  
         List<SubProducto> lstSubProductos = new ArrayList<>();

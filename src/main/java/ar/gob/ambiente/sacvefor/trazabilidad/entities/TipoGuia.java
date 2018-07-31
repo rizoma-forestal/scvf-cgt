@@ -25,12 +25,16 @@ import javax.validation.constraints.Size;
 public class TipoGuia implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    /**
+     * Variable privada: Identificador único
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     /**
-     * Nombre del Tipo
+     * Variable privada: Nombre del Tipo de guía
      */
     @Column (nullable=false, length=20, unique=true)
     @NotNull(message = "El campo nombre no puede ser nulo")
@@ -38,15 +42,18 @@ public class TipoGuia implements Serializable {
     private String nombre;    
 
     /**
-     * Listado de las Copias a imprimir de la Guía
+     * Variable privada: Listado de las Copias a imprimir del tipo de Guía
      */
     @OneToMany (mappedBy="tipoGuia")
     private List<CopiaGuia> copias;     
     
+    /**
+     * Variable privada: Estado de habilitación
+     */
     private boolean habilitado;
     
     /**
-     * Indica la vigencia del tipo de Guía en días.
+     * Variable privada: vigencia del tipo de Guía en días.
      */
     private int vigencia;
     

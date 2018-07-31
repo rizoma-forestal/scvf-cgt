@@ -15,22 +15,32 @@ import javax.persistence.Query;
 @Stateless
 public class ProductoUnidadFacade extends AbstractFacade<ProductoUnidad> {
 
+    /**
+     * Variable privada: EntityManager al que se le indica la unidad de persistencia mediante la cual accederá a la base de datos
+     */
     @PersistenceContext(unitName = "sacvefor-gestionTrazabilidadPU")
     private EntityManager em;
 
+    /**
+     * Método que implementa el abstracto para la obtención del EntityManager
+     * @return EntityManager para acceder a datos
+     */ 
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
 
+    /**
+     * Constructor
+     */
     public ProductoUnidadFacade() {
         super(ProductoUnidad.class);
     }
  
     /**
      * Método para validar la existencia de una Unidad según su nombre
-     * @param nombre : nombre a validar
-     * @return 
+     * @param nombre String nombre a validar
+     * @return ProductoUnidad Unidad solicitada
      */
     public ProductoUnidad getExistenteByNombre(String nombre) {
         List<ProductoUnidad> lstUnidad;
@@ -50,8 +60,8 @@ public class ProductoUnidadFacade extends AbstractFacade<ProductoUnidad> {
     
     /**
      * Método para validar la existencia de una Unidad según su aberviatura
-     * @param abrev : aberviatura a validar
-     * @return 
+     * @param abrev String aberviatura a validar
+     * @return ProductoUnidad Unidad perteneciente a la abreviatura remitida
      */
     public ProductoUnidad getExistenteByAbrev(String abrev) {
         List<ProductoUnidad> lstUnidad;
@@ -71,7 +81,7 @@ public class ProductoUnidadFacade extends AbstractFacade<ProductoUnidad> {
     
     /**
      * Método sobreescrito que lista las ProductoUnidad ordenadas por nombre
-     * @return 
+     * @return List<ProductoUnidad> listado de las Unidades ordenadas
      */
     @Override
     public List<ProductoUnidad> findAll(){
@@ -85,7 +95,7 @@ public class ProductoUnidadFacade extends AbstractFacade<ProductoUnidad> {
     /**
      * Mátodo que solo devuelve los ProductoUnidad habilitados.
      * Para poblar combos de selección.
-     * @return 
+     * @return List<ProductoUnidad> listado de las Unidades habilitadas y ordenadas
      */
     public List<ProductoUnidad> getHabilitados(){
         em = getEntityManager();

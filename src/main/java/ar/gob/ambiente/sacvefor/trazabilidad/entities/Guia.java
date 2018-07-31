@@ -33,12 +33,16 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 public class Guia implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    /**
+     * Variable privada: Identificador único
+     */  
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     /**
-     * Cadena que constituye el código único de la Guía,
+     * Variable privada: Cadena que constituye el código único de la Guía,
      * el formato se configurará en el archivo de propiedades Config.
      */
     @Column (nullable=false, length=20, unique=true)
@@ -47,7 +51,7 @@ public class Guia implements Serializable {
     private String codigo;
     
     /**
-     * Tipo de Guía
+     * Variable privada: Tipo de Guía:
      * Primaria,
      * Trazabilidad
      */
@@ -58,7 +62,7 @@ public class Guia implements Serializable {
     private TipoGuia tipo;
     
     /**
-     * Tipo de Guía que sirvió como fuente de productos
+     * Variable privada: Tipo de Guía que sirvió como fuente de productos
      * Solo para Guías primarias
      */
     @Audited(targetAuditMode = NOT_AUDITED)
@@ -68,7 +72,7 @@ public class Guia implements Serializable {
     private TipoGuia tipoFuente;
     
     /**
-     * Cadena que constituye el número identificatorio de la Guía fuente de Productos,
+     * Variable privada: Cadena que constituye el número identificatorio de la Guía fuente de Productos,
      * solo para Guías primarias
      */
     @Column (nullable=false, length=30)
@@ -77,28 +81,28 @@ public class Guia implements Serializable {
     private String numFuente;
     
     /**
-     * Jurisdicción de gestión local de la Guía de origen, para el caso de las Guías Primarias
+     * Variable privada: Jurisdicción de gestión local de la Guía de origen, para el caso de las Guías Primarias
      */
     @Column (length=50)
     @Size(message = "El campo numFuente no puede tener más de 30 caracteres", max = 50)  
     private String jurOrigen;    
     
     /**
-     * Listado de los items que constituyen el detalle de la Guía
+     * Variable privada: items que constituyen el detalle de la Guía
      */
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
     @JoinColumn(name = "guia_id", referencedColumnName = "id")
     private List<Item> items;      
     
     /**
-     * Guarda la Cuenta destino de la Guía
+     * Variable privada: Cuenta destino de la Guía
      */
     @ManyToOne
     @JoinColumn(name="cuentadestino_id")
     private Cuenta destino;
     
     /**
-     * Guarda el transporte que llevará los productos a destino
+     * Variable privada: transporte que llevará los productos a destino
      */
     @Audited(targetAuditMode = NOT_AUDITED)
     @OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
@@ -106,40 +110,40 @@ public class Guia implements Serializable {
     private Transporte transporte;
     
     /**
-     * Guarda la Cuenta origen de la Guía, solo para las Guías de Trazabilidad
+     * Variable privada: origen de la Guía, solo para las Guías de Trazabilidad
      */
     @ManyToOne
     @JoinColumn(name="cuentaorigen_id")
     private Cuenta origen;
 
     /**
-     * Fecha de registro de la Guía
+     * Variable privada: Fecha de registro de la Guía
      */
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date fechaAlta;  
     
     /**
-     * Fecha de emisión de la Guía.
+     * Variable privada: Fecha de emisión de la Guía.
      */
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date fechaEmisionGuia;    
     
     /**
-     * Fecha de emisión de vencimiento de la Guía.
+     * Variable privada: Fecha de emisión de vencimiento de la Guía.
      * Si correspondiera
      */
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date fechaVencimiento; 
     
     /**
-     * Fecha de cierre de la Guía, para los casos de Guías de transporte,
+     * Variable privada: Fecha de cierre de la Guía, para los casos de Guías de transporte,
      * cuando el destinatario la acepta mediante la interface de intermediación
      */
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date fechaCierre;    
 
     /**
-     * Usuario que gestiona la inserciones o ediciones
+     * Variable privada: Usuario que gestiona la inserciones o ediciones
      */
     @Audited(targetAuditMode = NOT_AUDITED)
     @ManyToOne
@@ -148,7 +152,7 @@ public class Guia implements Serializable {
     private Usuario usuario;    
     
     /**
-     * Estado que puede tomar una Guía
+     * Variable privada: Estado que puede tomar una Guía:
      * Carga inicial
      * Cerrada
      * En tránsito
@@ -163,15 +167,15 @@ public class Guia implements Serializable {
     private EstadoGuia estado;
     
     /**
-     * Campo que mostrará la fecha de las revisiones
-     * No se persiste
+     * Variable privada no persistida: Muestra la fecha de la revisión 
+     * para cada item del listado de revisiones de una Guía.
      */    
     @Transient
     private Date fechaRevision;    
     
     /**
-     * Campo temporal que indicará el destino de la copia, al generar el pdf.
-     * Dicho valor sera´obtenido del listado de Copias vinculadas al Tipo de Guía
+     * Variable privada no persistida: indicará el destino de la copia de la Guía, al generar el pdf.
+     * Dicho valor será obtenido del listado de Copias vinculadas al Tipo de Guía
      */
     @Transient
     private String destinoCopia;  

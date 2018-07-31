@@ -22,19 +22,30 @@ import javax.validation.constraints.NotNull;
 public class ProductoClase implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    /**
+     * Variable privada: Identificador único
+     */  
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    /**
+     * Variable privada: Nombre la clase de producto
+     */
     private String nombre;
     
     /**
-     * Guarda la Unidad de medida correspondiente a la Clase
+     * Variable privada: Guarda la Unidad de medida correspondiente a la Clase
      */
     @ManyToOne
     @JoinColumn(name="unidad_id", nullable=false)
     @NotNull(message = "Debe existir una unidad")
     private ProductoUnidad unidad;
     
+    /**
+     * Variable privada: Estado de habilitación
+     */
     private boolean habilitado;
 
     public String getNombre() {

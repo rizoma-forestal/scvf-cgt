@@ -1,6 +1,7 @@
 
 package ar.gob.ambiente.sacvefor.trazabilidad.service;
 
+import ar.gob.ambiente.sacvefor.trazabilidad.annotation.Secured;
 import ar.gob.ambiente.sacvefor.trazabilidad.entities.Parametrica;
 import ar.gob.ambiente.sacvefor.trazabilidad.entities.TipoParam;
 import ar.gob.ambiente.sacvefor.trazabilidad.facades.TipoParamFacade;
@@ -39,11 +40,42 @@ public class TipoParamFacadeREST {
     UriInfo uriInfo;          
 
     /**
-     * Método para crear un TipoParam.
-     * @param entity: El TipoParam a persistir
-     * @return : Un código de respuesta (201) con la uri de acceso a la Entidad creada o un código de error (400)
-     */    
+     * @api {post} /tipoparams Registrar un TipoParam
+     * @apiExample {curl} Ejemplo de uso:
+     *     curl -X POST -d [PATH_SERVER]/trazabilidad/rest/tipoparams -H "authorization: xXyYvWzZ"
+     * @apiVersion 1.0.0
+     * @apiName PostTipoParam
+     * @apiGroup TipoParam
+     * @apiHeader {String} Authorization Token recibido al autenticar el usuario
+     * @apiHeaderExample {json} Ejemplo de header:
+     *     {
+     *       "Authorization": "xXyYvWzZ"
+     *     } 
+     * @apiParam {ar.gob.ambiente.sacvefor.servicios.trazabilidad.TipoParam} entity Objeto java del paquete paqTrazabilidad.jar con los datos de la tipo de paramétrica a registrar
+     * @apiParamExample {java} Ejemplo de TipoParam
+     *      {"entity": {
+     *          "id": "0",
+     *          "nombre": "ROL_USUARIOS"
+     *      }
+     * @apiDescription Método para registrar un nuevo Tipo de paramétrica. Instancia una entidad a persistir un TipoParam local y la crea mediante el método local create(TipoParam tipoParam) 
+     * @apiSuccess {String} Location url de acceso mediante GET a la TipoParam registrado.
+     * @apiSuccessExample Response exitosa:
+     *     HTTP/1.1 201 OK
+     *     {
+     *       {
+     *          "Location": "[PATH_SERVER]/trazabilidad/rest/tipoparams/:id"
+     *       }
+     *     }
+     *
+     * @apiError TipoParamNoRegistrada No se registró el Tipo de paramétrica.
+     * @apiErrorExample Respuesta de Error:
+     *     HTTP/1.1 400 Not Found
+     *     {
+     *       "error": "Hubo un error procesando la inserción en el Registro Unico"
+     *     }
+     */
     @POST
+    @Secured
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response create(ar.gob.ambiente.sacvefor.servicios.trazabilidad.TipoParam entity) {
         // instancio la entidad
@@ -63,13 +95,44 @@ public class TipoParamFacadeREST {
     }
 
     /**
-     * Método para editar un TipoParam existente
-     * @param id : Id del TipoParam a editar
-     * @param entity : TipoParam a editar
-     * @return : El código de repuesta que corresponda según se haya realizado o no la operación: 200 o 400
-     */    
+     * @api {put} /tipoparams/:id Actualizar un tipo de paramétruica existente
+     * @apiExample {curl} Ejemplo de uso:
+     *     curl -X PUT -d [PATH_SERVER]/trazabilidad/rest/tipoparams/1 -H "authorization: xXyYvWzZ"
+     * @apiVersion 1.0.0
+     * @apiName PutTipoParam
+     * @apiGroup TipoParam
+     * @apiHeader {String} Authorization Token recibido al autenticar el usuario
+     * @apiHeaderExample {json} Ejemplo de header:
+     *     {
+     *       "Authorization": "xXyYvWzZ"
+     *     } 
+     * @apiParam {ar.gob.ambiente.sacvefor.servicios.trazabilidad.TipoParam} entity Objeto java del paquete paqTrazabilidad.jar con los datos del tipo de paramétrica a actualizar
+     * @apiParam {Long} Id Identificador único del tipo de paramétrica a actualizar
+     * @apiParamExample {java} Ejemplo de TipoParam
+     *      {"entity": {
+     *          "id": "1",
+     *          "nombre": "ROL_USUARIOS"}
+     *      }
+     * @apiParamExample {json} Emplo de id
+     *      {
+     *          "id": "1"
+     *      }
+     * @apiDescription Método para actualizar un tipo de paramétrica existente. Obtiene el TipoParam correspondiente al id recibido 
+     * mediante el método local find(Long id), actualiza sus datos según los de la entidad recibida y la edita mediante 
+     * el método local edit(TipoParam tipoParam).
+     * @apiSuccessExample Response exitosa:
+     *     HTTP/1.1 200 OK
+     *     {}
+     * @apiError TipoParamNoActualizado No se actualizó el TipoParam.
+     * @apiErrorExample Respuesta de Error:
+     *     HTTP/1.1 400 Not Modified
+     *     {
+     *       "error": "Hubo un error procesado la actualización en el Registro Unico."
+     *     }
+     */   
     @PUT
     @Path("{id}")
+    @Secured
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response edit(@PathParam("id") Long id, ar.gob.ambiente.sacvefor.servicios.trazabilidad.TipoParam entity) {
         TipoParam tipo = tipoParamFacade.find(id);
@@ -85,37 +148,115 @@ public class TipoParamFacadeREST {
     }
 
     /**
-     * Método para obtener el TipoParam correspondiente al id recibido
-     * Ej: [PATH]/tipoparams/1
-     * @param id: id del TipoParam a obtener
-     * @return
-     */    
+     * @api {get} /tipoparams/:id Ver un TipoParam
+     * @apiExample {curl} Ejemplo de uso:
+     *     curl -X GET -d [PATH_SERVER]/trazabilidad/rest/tipoparams/2 -H "authorization: xXyYvWzZ"
+     * @apiVersion 1.0.0
+     * @apiName GetTipoParam
+     * @apiGroup TipoParam
+     * @apiHeader {String} Authorization Token recibido al autenticar el usuario
+     * @apiHeaderExample {json} Ejemplo de header:
+     *     {
+     *       "Authorization": "xXyYvWzZ"
+     *     } 
+     * @apiParam {Long} id Identificador único del tipo de paramétrica
+     * @apiDescription Método para obtener un TipoParam existente según el id remitido.
+     * Obtiene el tipo de paramétrica mediante el método local find(Long id)
+     * @apiSuccess {ar.gob.ambiente.sacvefor.servicios.trazabilidad.TipoParam} TipoParam Detalle del tipo de paramétrica registrado.
+     * @apiSuccessExample Respuesta exitosa:
+     *     HTTP/1.1 200 OK
+     *     {
+     *      {
+     *          "id": "2",
+     *          "nombre": "TIPO_ITEM",
+     *      }
+     *     }
+     * @apiError TipoParamNotFound No existe tipo de paramétrica registrada con ese id.
+     * @apiErrorExample Respuesta de error:
+     *     HTTP/1.1 400 Not Found
+     *     {
+     *       "error": "No hay tipo de paramétrica registrada con el id recibido"
+     *     }
+     */     
     @GET
     @Path("{id}")
+    @Secured
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public TipoParam find(@PathParam("id") Long id) {
         return tipoParamFacade.find(id);
     }
 
     /**
-     * Método que retorna todos los TipoParam registrados
-     * Ej: [PATH]/tipoparams
-     * @return 
-     */    
+     * @api {get} /tipoparams Ver todas los tipos de paramétricas
+     * @apiExample {curl} Ejemplo de uso:
+     *     curl -X GET -d [PATH_SERVER]/trazabilidad/rest/tipoparams -H "authorization: xXyYvWzZ"
+     * @apiVersion 1.0.0
+     * @apiName GetTipoParams
+     * @apiGroup TipoParam
+     * @apiHeader {String} Authorization Token recibido al autenticar el usuario
+     * @apiHeaderExample {json} Ejemplo de header:
+     *     {
+     *       "Authorization": "xXyYvWzZ"
+     *     } 
+     * @apiDescription Método para obtener un listado de los tipos de paramétricas existentes.
+     * Obtiene los tipos de paramétricas mediante el método local findAll()
+     * @apiSuccess {ar.gob.ambiente.sacvefor.servicios.trazabilidad.TipoParam} TipoParam Listado con todas los tipos de paramétricas registrados.
+     * @apiSuccessExample Respuesta exitosa:
+     *     HTTP/1.1 200 OK
+     *     {
+     *      {"tipoParams": [
+     *          {"id": "1",
+     *          "nombre": "ROL_USUARIOS"},
+     *          {"id": "2",
+     *          "nombre": "TIPO_ITEM"}
+     *      ]
+     *     }
+     * @apiError TipoParamsNotFound No existen tipos de paramétricas registrados.
+     * @apiErrorExample Respuesta de error:
+     *     HTTP/1.1 400 Not Found
+     *     {
+     *       "error": "No hay tipos de paramétricas registrados"
+     *     }
+     */     
     @GET
+    @Secured
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<TipoParam> findAll() {
         return tipoParamFacade.findAll();
     }
     
     /**
-     * Método que, según los parámetros recibidos ejecuta uno u otro método
-     * @param nombre: nombre del TipoParam a buscar
-     * Ej: [PATH]/tipoparams/query?nombre=ROL_USUARIOS
-     * @return 
-     */        
+     * @api {get} /tipoparams/query?nombre=:nombre Ver tipo de paramétrica según su nombre
+     * @apiExample {curl} Ejemplo de uso:
+     *     curl -X GET -d [PATH_SERVER]/trazabilidad/rest/tipoparams/query?nombre=ROL_USUARIOS -H "authorization: xXyYvWzZ"
+     * @apiVersion 1.0.0
+     * @apiName GetTipoParamQuery
+     * @apiGroup TipoParam
+     * @apiHeader {String} Authorization Token recibido al autenticar el usuario
+     * @apiHeaderExample {json} Ejemplo de header:
+     *     {
+     *       "Authorization": "xXyYvWzZ"
+     *     }
+     * @apiParam {String} name Nombre del tipo de paramétrica
+     * @apiDescription Método para obtener un tipo de paramétrica según su nombre.
+     * Obtiene un tipo de paramétrica mediante el método local getExistente(String nombre)
+     * @apiSuccess {ar.gob.ambiente.sacvefor.servicios.trazabilidad.TipoParam} TipoParam Detalle del tipo de paramétrica registrado.
+     * @apiSuccessExample Respuesta exitosa:
+     *     HTTP/1.1 200 OK
+     *      {
+     *          {"id": "1",
+     *          "nombre": "ROL_USUARIOS"}
+     *      }
+     * @apiError TipoParamNotFound No existe tipo de paramétrica registrado con ese nombre.
+     * @apiErrorExample Respuesta de error:
+     *     HTTP/1.1 400 Not Found
+     *     {
+     *       "error": "No hay tipo de paramétrica registrado con el nombre recibido"
+     *     }
+     */     
     @GET
     @Path("/query")
+    @Secured
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<TipoParam> findByQuery(@QueryParam("nombre") String nombre) {
         List<TipoParam> result = new ArrayList<>();
@@ -127,27 +268,58 @@ public class TipoParamFacadeREST {
         }
         return result;
     }  
-    
+
     /**
-     * Método que devuelve todas las Parametricas correspondientes al TipoParam cuyo id se recibe como parámetro
-     * Ej: [PATH]/tipoparams/1/parametricas
-     * @param id
-     * @return 
-     */
+     * @api {get} /tipoparams/:id/parametricas Ver las paramétricas
+     * @apiExample {curl} Ejemplo de uso:
+     *     curl -X GET -d [PATH_SERVER]/trazabilidad/rest/tipoparams/1/parametricas -H "authorization: xXyYvWzZ"
+     * @apiVersion 1.0.0
+     * @apiName GetPareametricas
+     * @apiGroup TipoParam
+     * @apiHeader {String} Authorization Token recibido al autenticar el usuario
+     * @apiHeaderExample {json} Ejemplo de header:
+     *     {
+     *       "Authorization": "xXyYvWzZ"
+     *     } 
+     * @apiParam {Long} id Identificador del tipo de paramétrica cuyas paramétricas se quiere obtener
+     * @apiDescription Método para obtener las paramétricas asociados a un tipo existente según el id remitido.
+     * Obtiene los usuarios mediante el método local findParametricasByTipo(Long id)
+     * @apiSuccess {ar.gob.ambiente.sacvefor.servicios.trazabilidad.TipoParam} Parametrica Listado de las paramétricas registradas vinculadas al tipo cuyo id se recibió.
+     * @apiSuccessExample Respuesta existosa:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "parametricas": [
+     *          {"id": "1",
+     *          "nombre": "TRANSFORMADOR",
+     *          "tipo": {
+     *              "id": "1",
+     *              "nombre": "ROL_USUARIOS"
+     *          },
+     *          {"id": "2",
+     *          "nombre": "ACOPIADOR",
+     *          "tipo": {
+     *              "id": "1",
+     *              "nombre": "ROL_USUARIOS",
+     *          }
+     *       ]
+     *     }
+     *
+     * @apiError ParametricasNotFound No existen paramétricas registradas vinculadas a la id del tipo.
+     *
+     * @apiErrorExample Respuesta de error:
+     *     HTTP/1.1 400 Not Found
+     *     {
+     *       "error": "No hay paramétricas registradas vinculados al id del tipo recibido."
+     *     }
+     */      
     @GET
     @Path("{id}/parametricas")
+    @Secured
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Parametrica> findParametricasByTipo(@PathParam("id") Long id){
         return tipoParamFacade.getParamByTipo(id);
     }    
 
-    /**
-     * Método que obtiene un listado de TipoParam cuyos id se encuentran entre los parámetros de inicio y fin recibidos
-     * Ej: [PATH]/tipoparams/1/10
-     * @param from: parámetro 'desde' el cual se inicia el listado
-     * @param to: parámetro 'hasta' el cual se completa el listado
-     * @return 
-     */
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -155,11 +327,6 @@ public class TipoParamFacadeREST {
         return tipoParamFacade.findRange(new int[]{from, to});
     }
 
-    /**
-     * Método que devuelve un entero con la totalidad de los TipoParam registrados
-     * Ej: [PATH]/tipoparams/count
-     * @return 
-     */    
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)

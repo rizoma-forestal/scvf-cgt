@@ -24,12 +24,16 @@ import javax.validation.constraints.Size;
 public class EstadoGuia implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    /**
+     * Variable privada: Identificador único
+     */  
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     /**
-     * Nombre del Estado
+     * Variable privada: Nombre del Estado
      */
     @Column (nullable=false, length=20, unique=true)
     @NotNull(message = "El campo nombre no puede ser nulo")
@@ -37,7 +41,7 @@ public class EstadoGuia implements Serializable {
     private String nombre;
     
     /**
-     * Especifica si el estado permite la edición de los datos complementarios de la Guía:
+     * Variable privada: Especifica si el estado permite la edición de los datos complementarios de la Guía:
      * Productos
      * Transporte
      * Destino
@@ -45,30 +49,33 @@ public class EstadoGuia implements Serializable {
     private boolean habilitaEdicionComp;
     
     /**
-     * Especifica si el estado permite la edición de la Fuente de productos y Titular de la Guía
+     * Variable privada: Especifica si el estado permite la edición de la Fuente de productos y Titular de la Guía
      */
     private boolean habilitaEdicionFuente;
     
     /**
-     * Especifica si el estado permite el tránsito de la Guía en el caso en que se trate de una Guía de tránsito
+     * Variable privada: Especifica si el estado permite el tránsito de la Guía en el caso en que se trate de una Guía de tránsito
      */
     private boolean habilitaTransito;
     
     /**
-     * Especifica si el estado permite que la Guía sea fuente de Productos para otra Guía
+     * Variable privada: Especifica si el estado permite que la Guía sea fuente de Productos para otra Guía
      */
     private boolean habilitaFuenteProductos;
     
     /**
-     * Especifica si el estado permite que la Guía inicie el proceso de emisión
+     * Variable privada: Especifica si el estado permite que la Guía inicie el proceso de emisión
      */
     private boolean habilitaEmision;   
     
     /**
-     * Especifica si el estado implica que la Guía completó su ciclo de vida
+     * Variable privada: Especifica si el estado implica que la Guía completó su ciclo de vida
      */
     private boolean completaCiclo;
     
+    /**
+     * Variable privada: Estado de habilitación
+     */
     private boolean habilitado;
 
     public boolean isHabilitaEmision() {

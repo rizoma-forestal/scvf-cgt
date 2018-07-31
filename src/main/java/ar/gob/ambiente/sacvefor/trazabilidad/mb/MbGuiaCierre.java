@@ -23,6 +23,8 @@ import ar.gob.ambiente.sacvefor.trazabilidad.facades.ParametricaFacade;
 import ar.gob.ambiente.sacvefor.trazabilidad.facades.TipoGuiaFacade;
 import ar.gob.ambiente.sacvefor.trazabilidad.facades.TipoParamFacade;
 import ar.gob.ambiente.sacvefor.trazabilidad.util.JsfUtil;
+import ar.gob.ambiente.sacvefor.trazabilidad.util.Token;
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,6 +47,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 /**
@@ -53,47 +56,171 @@ import javax.ws.rs.core.Response;
  */
 public class MbGuiaCierre implements Serializable{
 
+    /**
+     * Variable privada: ComponenteLocal Entidad que guarda la provincia de la cual se solicitan las guías pendientes de cierre
+     */  
     private ComponenteLocal provinciaSelected;
+    
+    /**
+     * Variable privada: List<ComponenteLocal> listado de los componentes locales registrados que compone el combo para su selección
+     */
     private List<ComponenteLocal> lstProvincias;
+    
+    /**
+     * Variable privada: List<ar.gob.ambiente.sacvefor.servicios.cgl.ItemProductivo> listado de los ítems correspondientes a la guía seleccionada
+     */  
     private List<ar.gob.ambiente.sacvefor.servicios.cgl.ItemProductivo> lstItemLocales;
+    
+    /**
+     * Variable privada: List<ar.gob.ambiente.sacvefor.servicios.cgl.Guia> listado de las guías pendientes de cierre de un componente local
+     */  
     private List<ar.gob.ambiente.sacvefor.servicios.cgl.Guia> lstGuiasLocal;
+    
+    /**
+     * Variable privada: List<ar.gob.ambiente.sacvefor.servicios.cgl.Guia> listado para el filtro de las guías
+     */  
     private List<ar.gob.ambiente.sacvefor.servicios.cgl.Guia> lstGuiasLocalFilters;
+    
+    /**
+     * Variable privada: ar.gob.ambiente.sacvefor.servicios.cgl.Guia Entidad para guardar la guía seleccionada
+     */  
     private ar.gob.ambiente.sacvefor.servicios.cgl.Guia guiaLocalSelected;
+    
+    /**
+     * Variable privada: Logger para escribir en el log del server
+     */  
     private static final Logger logger = Logger.getLogger(MbGuiaCierre.class.getName());
+    
+    /**
+     * Variable privada: MbSesion para gestionar las variables de sesión del usuario
+     */  
     private MbSesion sesion;
+    
+    /**
+     * Variable privada: Usuario de sesión
+     */  
     private Usuario usLogueado;
+    
+    /**
+     * Variable privada: indica si el formulario corresponde a una vista detalle de la guía
+     */  
     private boolean view;
+    
+    /**
+     * Variable privada: Logger para escribir en el log del server
+     */  
     static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(MbGuiaCierre.class);
     
     // campos para la API CGL
+    /**
+     * Variable privada: GuiaLocalClient Cliente para la API REST de Componente local
+     */
     private GuiaLocalClient guiaLocalClient;
+    
+    /**
+     * Variable privada: EstadoGuiaLocalClient Cliente para la API REST de Componente local
+     */
     private EstadoGuiaLocalClient estadoGuiaLocClient;
     
+    /**
+     * Variable privada: UsuarioApiClient Cliente para la API REST de Gestión local
+     */    
+    private ar.gob.ambiente.sacvefor.trazabilidad.cgl.client.UsuarioApiClient usuarioClientCgl;
+    
+    /**
+     * Variable privada: Token obtenido al validar el usuario de la API de Gestión local
+     */     
+    private Token tokenCgl;
+    
+    /**
+     * Variable privada: Token en formato String del obtenido al validar el usuario de la API de Gestión local
+     */ 
+    private String strTokenCgl;
+    
     // campos para la API CCV
+    /**
+     * Variable privada: GuiaCtrlClient Cliente para la API REST de Control y Verificación
+     */
     private GuiaCtrlClient guiaCtrlClient;
+    
+    /**
+     * Variable privada: Cliente para la API de UsuarioAPI de control y verificación
+     */
+    private ar.gob.ambiente.sacvefor.trazabilidad.ctrl.client.UsuarioApiClient usClientCtrl;
+    
+    /**
+     * Variable privada: token recibido al autenticar el usuario de la API
+     */
+    private String strTokenCtrl;
+    
+    /**
+     * Variable privada: Objeto para gestionar el token
+     */
+    private Token tokenCtrl;    
+    
+    /**
+     * Variable privada: ParamCtrlClient Cliente para la API REST de Control y Verificación
+     */
     private ParamCtrlClient paramCtrlClient;
     
     // campos y recursos para el envío de correos al usuario
-    @Resource(mappedName ="java:/mail/ambientePrueba")    
+    /**
+     * Variable privada: sesión de mail del servidor
+     */
+    @Resource(mappedName ="java:/mail/ambientePrueba") 
     private Session mailSesion;
+    
+    /**
+     * Variable privada: String mensaje a enviar por correo electrónico
+     */  
     private Message mensaje; 
     
     // inyección de recursos
+    /**
+     * Variable privada: EJB inyectado para el acceso a datos de Componente local
+     */  
     @EJB
     private ComponenteLocalFacade componenteLocFacade;
+    
+    /**
+     * Variable privada: EJB inyectado para el acceso a datos de EstadoGuia
+     */  
     @EJB
     private EstadoGuiaFacade estadoFacade;
+    
+    /**
+     * Variable privada: EJB inyectado para el acceso a datos de TipoGuia
+     */  
     @EJB
     private TipoGuiaFacade tipoGuiaFacade;
+    
+    /**
+     * Variable privada: EJB inyectado para el acceso a datos de Cuenta
+     */  
     @EJB
     private CuentaFacade cuentaFacade;
+    
+    /**
+     * Variable privada: EJB inyectado para el acceso a datos de TipoParam
+     */  
     @EJB
     private TipoParamFacade tipoParamFacade;
+    
+    /**
+     * Variable privada: EJB inyectado para el acceso a datos de Parametrica
+     */  
     @EJB
     private ParametricaFacade paramFacade;
+    
+    /**
+     * Variable privada: EJB inyectado para el acceso a datos de Guia
+     */  
     @EJB
     private GuiaFacade guiaFacade;
-
+    
+    /**
+     * Constructor
+     */
     public MbGuiaCierre() {
     }
 
@@ -105,6 +232,10 @@ public class MbGuiaCierre implements Serializable{
         this.lstItemLocales = lstItemLocales;
     }
 
+    /**
+     * Método que puebla el listado de las Provincias emisoras de guías
+     * @return List<ComponenteLocal> listado de los componentes locales de las provincias
+     */
     public List<ComponenteLocal> getLstProvincias() {
         lstProvincias = componenteLocFacade.getHabilitados();
         return lstProvincias;
@@ -159,7 +290,8 @@ public class MbGuiaCierre implements Serializable{
      ******************************/ 
     
     /**
-     * Método de inicialización del Bean
+     * Método que se ejecuta luego de instanciada la clase e inicializa las entidades a gestionar, 
+     * el bean de sesión y el usuario
      */
     @PostConstruct
     public void init(){
@@ -191,17 +323,36 @@ public class MbGuiaCierre implements Serializable{
      * Métodos operativos **
      ***********************/     
     /**
-     * Método para cargar las Guías locales a nombre del Usuario, pendientes de aceptación
+     * Método para cargar las Guías locales a nombre del Usuario, pendientes de aceptación.
+     * Las obtinene mediante una consulta a la API del componente local seleccionado oportunamente
      */
     public void cargarGuiasLocales() {
         if(provinciaSelected.getId() != null){
             try{
+                // instancio el cliente para la selección de la Guía, obtengo el token si no está seteado o está vencido
+                if(tokenCgl == null){
+                    getTokenCgl();
+                }else try {
+                    if(!tokenCgl.isVigente()){
+                        getTokenCgl();
+                    }
+                } catch (IOException ex) {
+                    LOG.fatal("Hubo un error obteniendo la vigencia del token de Gestión local. " + ex.getMessage());
+                }                
                 // instancio el cliente
                 guiaLocalClient = new GuiaLocalClient(provinciaSelected.getUrl());
                 // obtngo el listado
                 GenericType<List<ar.gob.ambiente.sacvefor.servicios.cgl.Guia>> gType = new GenericType<List<ar.gob.ambiente.sacvefor.servicios.cgl.Guia>>() {};
-                Response response = guiaLocalClient.findByQuery_JSON(Response.class, null, null, String.valueOf(usLogueado.getLogin()));
-                lstGuiasLocal = response.readEntity(gType);
+                Response response = guiaLocalClient.findByQuery_JSON(Response.class, null, null, String.valueOf(usLogueado.getLogin()), tokenCgl.getStrToken());
+                List<ar.gob.ambiente.sacvefor.servicios.cgl.Guia> lstGuiasTemp = new ArrayList<>();
+                lstGuiasTemp = response.readEntity(gType);
+                lstGuiasLocal = new ArrayList<>();
+                Date hoy = new Date(System.currentTimeMillis());
+                for(ar.gob.ambiente.sacvefor.servicios.cgl.Guia g : lstGuiasTemp){
+                    if(!g.getFechaVencimiento().before(hoy)){
+                        lstGuiasLocal.add(g);
+                    }
+                }
                 guiaLocalClient.close();
             }catch(ClientErrorException ex){
                 // muestro un mensaje al usuario
@@ -215,15 +366,25 @@ public class MbGuiaCierre implements Serializable{
     }    
     
     /**
-     * Método que prepara la vista detalle de la Guía seleccionada
+     * Método que prepara la vista detalle de la Guía seleccionada.
+     * Obtiene los items de la Guía mediante una consulta a la API del componente local emisor
      */
     public void prepareView(){
-        // instancio el cliente para buscar los items
+        // instancio el cliente para la selección de la Guía, obtengo el token si no está seteado o está vencido
+        if(tokenCgl == null){
+            getTokenCgl();
+        }else try {
+            if(!tokenCgl.isVigente()){
+                getTokenCgl();
+            }
+        } catch (IOException ex) {
+            LOG.fatal("Hubo un error obteniendo la vigencia del token de Gestión local. " + ex.getMessage());
+        }   
         guiaLocalClient = new GuiaLocalClient(provinciaSelected.getUrl());
         lstItemLocales = new ArrayList<>();
         // obtengo el listado
         GenericType<List<ar.gob.ambiente.sacvefor.servicios.cgl.ItemProductivo>> gType = new GenericType<List<ar.gob.ambiente.sacvefor.servicios.cgl.ItemProductivo>>() {};
-        Response response = guiaLocalClient.findItemsByGuia_JSON(Response.class, String.valueOf(guiaLocalSelected.getId()));
+        Response response = guiaLocalClient.findItemsByGuia_JSON(Response.class, String.valueOf(guiaLocalSelected.getId()), tokenCgl.getStrToken());
         lstItemLocales = response.readEntity(gType);
         guiaLocalClient.close();
         view = true;
@@ -293,10 +454,20 @@ public class MbGuiaCierre implements Serializable{
 
             // actualizo la Guía de Producción local
             List<ar.gob.ambiente.sacvefor.servicios.cgl.EstadoGuia> lstEstados;
+            // instancio el cliente para la selección del estado de Guía, obtengo el token si no está seteado o está vencido
+            if(tokenCgl == null){
+                getTokenCgl();
+            }else try {
+                if(!tokenCgl.isVigente()){
+                    getTokenCgl();
+                }
+            } catch (IOException ex) {
+                LOG.fatal("Hubo un error obteniendo la vigencia del token de Gestión local. " + ex.getMessage());
+            }   
             estadoGuiaLocClient = new EstadoGuiaLocalClient(provinciaSelected.getUrl());
             // obtengo el estado de cerrada 
             GenericType<List<ar.gob.ambiente.sacvefor.servicios.cgl.EstadoGuia>> gTypeEstado = new GenericType<List<ar.gob.ambiente.sacvefor.servicios.cgl.EstadoGuia>>() {};
-            Response responseCgl = estadoGuiaLocClient.findByQuery_JSON(Response.class, ResourceBundle.getBundle("/Config").getString("EstCerrada"));
+            Response responseCgl = estadoGuiaLocClient.findByQuery_JSON(Response.class, ResourceBundle.getBundle("/Config").getString("EstCerrada"), tokenCgl.getStrToken());
             lstEstados = responseCgl.readEntity(gTypeEstado);
             estadoGuiaLocClient.close();
             if(!lstEstados.isEmpty()){
@@ -304,8 +475,18 @@ public class MbGuiaCierre implements Serializable{
                 // seteo la fecha de cierre
                 guiaLocalSelected.setFechaCierre(fechaAlta);
                 // actualizo
+                // instancio el cliente para la selección del estado de Guía, obtengo el token si no está seteado o está vencido
+                if(tokenCgl == null){
+                    getTokenCgl();
+                }else try {
+                    if(!tokenCgl.isVigente()){
+                        getTokenCgl();
+                    }
+                } catch (IOException ex) {
+                    LOG.fatal("Hubo un error obteniendo la vigencia del token de Gestión local. " + ex.getMessage());
+                }   
                 guiaLocalClient = new GuiaLocalClient(provinciaSelected.getUrl());
-                responseCgl = guiaLocalClient.edit_JSON(guiaLocalSelected, String.valueOf(guiaLocalSelected.getId()));
+                responseCgl = guiaLocalClient.edit_JSON(guiaLocalSelected, String.valueOf(guiaLocalSelected.getId()), tokenCgl.getStrToken());
                 guiaLocalClient.close();
                 // respondo según el mensaje recibido
                 if(responseCgl.getStatus() == 200){
@@ -315,11 +496,21 @@ public class MbGuiaCierre implements Serializable{
                             JsfUtil.addErrorMessage("No se pudo enviar el mensaje de confirmación al Titular de la Guía emitida.");
                         }
                     }
+                    // obtengo el token si no está seteado o está vencido
+                    if(tokenCtrl == null){
+                        getTokenCtrl();
+                    }else try {
+                        if(!tokenCtrl.isVigente()){
+                            getTokenCtrl();
+                        }
+                    } catch (IOException ex) {
+                        logger.log(Level.SEVERE, "{0} - {1}", new Object[]{"Hubo un error obteniendo la vigencia del token", ex.getMessage()});
+                    }
                     // busco la Guía en el CCV
                     guiaCtrlClient = new GuiaCtrlClient();
                     List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia> lstGuias;
                     GenericType<List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia>> gTypeG = new GenericType<List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Guia>>() {};
-                    Response response = guiaCtrlClient.findByQuery_JSON(Response.class, guiaLocalSelected.getCodigo(), null, null);
+                    Response response = guiaCtrlClient.findByQuery_JSON(Response.class, guiaLocalSelected.getCodigo(), null, null, tokenCtrl.getStrToken());
                     lstGuias = response.readEntity(gTypeG);
                     if(lstGuias.get(0) != null){
                         // si está registrada en el CCV, actualizo su estado
@@ -330,14 +521,25 @@ public class MbGuiaCierre implements Serializable{
                         List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Parametrica> lstParmEstados;
                         paramCtrlClient = new ParamCtrlClient();
                         GenericType<List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Parametrica>> gTypeParam = new GenericType<List<ar.gob.ambiente.sacvefor.servicios.ctrlverif.Parametrica>>() {};
-                        responseCgl = paramCtrlClient.findByQuery_JSON(Response.class, ResourceBundle.getBundle("/Config").getString("CtrlTipoParamEstGuia"), ResourceBundle.getBundle("/Config").getString("CtrlGuiaCerrada"));
+                        responseCgl = paramCtrlClient.findByQuery_JSON(Response.class, ResourceBundle.getBundle("/Config").getString("CtrlTipoParamEstGuia"), ResourceBundle.getBundle("/Config").getString("CtrlGuiaCerrada"), tokenCtrl.getStrToken());
                         lstParmEstados = responseCgl.readEntity(gTypeParam);
                         // solo continúo si encontré el Estado correspondiente
                         if(!lstParmEstados.isEmpty()){
                             // seteo la Guía solo con los valores que necesito para editarla
                             guiaCtrol.setId(idGuiaCtrl);
                             guiaCtrol.setEstado(lstParmEstados.get(0));
-                            responseCgl = guiaCtrlClient.edit_JSON(guiaCtrol, String.valueOf(guiaCtrol.getId()));
+                            
+                            // obtengo el token si no está seteado o está vencido
+                            if(tokenCtrl == null){
+                                getTokenCtrl();
+                            }else try {
+                                if(!tokenCtrl.isVigente()){
+                                    getTokenCtrl();
+                                }
+                            } catch (IOException ex) {
+                                logger.log(Level.SEVERE, "{0} - {1}", new Object[]{"Hubo un error obteniendo la vigencia del token", ex.getMessage()});
+                            }
+                            responseCgl = guiaCtrlClient.edit_JSON(guiaCtrol, String.valueOf(guiaCtrol.getId()), tokenCtrl.getStrToken());
                             if(responseCgl.getStatus() == 200){
                                 // se completaron todas las operaciones
                                 JsfUtil.addSuccessMessage("La Guía se cerró correctamente y se actualizaron los Componentes de Gestión local y Cotrol y Verificación.");
@@ -376,8 +578,9 @@ public class MbGuiaCierre implements Serializable{
      *********************/
     
     /**
-     * Método que crea el código de la Guía
-     * @return 
+     * Método privado que crea el código de la Guía.
+     * Consumido por aceptarGuia()
+     * @return String código de la guía
      */
     private String setCodigoGuia() {
         String codigo;
@@ -405,10 +608,11 @@ public class MbGuiaCierre implements Serializable{
     }
     
     /**
-     * Método para obtener una Paramétrica según su nombre y nombre del Tipo
-     * @param nomTipo : nombre del Tipo de Paramétrica
-     * @param nomParam : nombre de la Paramétrica
-     * @return 
+     * Método privado para obtener una Paramétrica según su nombre y nombre del Tipo.
+     * Consumido por varios métodos públicos.
+     * @param nomTipo String nombre del Tipo de Paramétrica
+     * @param nomParam String nombre de la Paramétrica
+     * @return Parametrica paramétrica solicitada
      */
     private Parametrica obtenerParametro(String nomTipo, String nomParam) {
         TipoParam tipo = tipoParamFacade.getExistente(nomTipo);
@@ -416,8 +620,9 @@ public class MbGuiaCierre implements Serializable{
     }    
 
     /**
-     * Método para enviar un correo al Origen de la Guía comunicando su cierre
-     * @return 
+     * Método privado para enviar un correo al Origen de la Guía comunicando su cierre.
+     * Consumido por aceptarGuia()
+     * @return boolean true o false según el correo se haya emitido o no
      */    
     private boolean enviarCorreo() {
         SimpleDateFormat formateador = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -459,4 +664,42 @@ public class MbGuiaCierre implements Serializable{
         
         return result;
     }
+    
+    /**
+     * Método privado que obtiene y setea el tokenTraz para autentificarse ante la API rest de control y verificación.
+     * Crea el campo de tipo Token con la clave recibida y el momento de la obtención.
+     * Utilizado en aceptarGuia()
+     */    
+    private void getTokenCtrl(){
+        try{
+            usClientCtrl = new ar.gob.ambiente.sacvefor.trazabilidad.ctrl.client.UsuarioApiClient();
+            Response responseUs = usClientCtrl.authenticateUser_JSON(Response.class, ResourceBundle.getBundle("/Config").getString("UsRestCtrl"));
+            MultivaluedMap<String, Object> headers = responseUs.getHeaders();
+            List<Object> lstHeaders = headers.get("Authorization");
+            strTokenCtrl = (String)lstHeaders.get(0); 
+            tokenCtrl = new Token(strTokenCtrl, System.currentTimeMillis());
+            usClientCtrl.close();
+        }catch(ClientErrorException ex){
+            System.out.println("Hubo un error obteniendo el token: " + ex.getMessage());
+        }
+    }     
+    
+    /**
+     * Método privado que obtiene y setea el token para autentificarse ante la API rest de Gestión local para la provincia que corresponda
+     * Crea el campo de tipo Token con la clave recibida y el momento de la obtención.
+     * Utilizado por cargarGuiasLocales(), prepareView() y aceptarGuia()
+     */
+    private void getTokenCgl(){
+        try{
+            usuarioClientCgl = new ar.gob.ambiente.sacvefor.trazabilidad.cgl.client.UsuarioApiClient(provinciaSelected.getUrl());
+            Response responseUs = usuarioClientCgl.authenticateUser_JSON(Response.class, ResourceBundle.getBundle("/Config").getString("UsRestCgl"));
+            MultivaluedMap<String, Object> headers = responseUs.getHeaders();
+            List<Object> lstHeaders = headers.get("Authorization");
+            strTokenCgl = (String)lstHeaders.get(0); 
+            tokenCgl = new Token(strTokenCgl, System.currentTimeMillis());
+            usuarioClientCgl.close();
+        }catch(ClientErrorException ex){
+            System.out.println("Hubo un error obteniendo el token para la API Gestión local: " + ex.getMessage());
+        }
+    }    
 }

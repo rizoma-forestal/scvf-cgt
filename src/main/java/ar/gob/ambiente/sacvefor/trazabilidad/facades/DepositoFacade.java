@@ -15,22 +15,32 @@ import javax.persistence.Query;
 @Stateless
 public class DepositoFacade extends AbstractFacade<Deposito> {
 
+    /**
+     * Variable privada: EntityManager al que se le indica la unidad de persistencia mediante la cual accederá a la base de datos
+     */
     @PersistenceContext(unitName = "sacvefor-gestionTrazabilidadPU")
     private EntityManager em;
 
+    /**
+     * Método que implementa el abstracto para la obtención del EntityManager
+     * @return EntityManager para acceder a datos
+     */ 
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
 
+    /**
+     * Constructor
+     */
     public DepositoFacade() {
         super(Deposito.class);
     }
     
     /**
-     * Método para obtener un Depósito para una Cuenta determinada según su CUIT
-     * @param cuit
-     * @return 
+     * Método para obtener un Depósito para una Cuenta determinada según el CUIT de su titular
+     * @param cuit Long cuit del titular de la cuenta
+     * @return Deposito depósito perteneciente a la cuenta del titular cuyo cuit se remitió
      */
     public Deposito getExistente(Long cuit) {
         List<Deposito> lstDepositos;

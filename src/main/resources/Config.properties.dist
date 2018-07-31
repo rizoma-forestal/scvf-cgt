@@ -1,10 +1,25 @@
-# Parámetros dinámicos
+# Parámetros dinámicos de acceso a servicios
 Server=http://localhost:8080
-ServerServicios=http://localhost:8080
+ServerServiciosLectura=http://localhost:8080
+ServerEntidades=http://localhost:8080
+ServerCtrlVerif=http://localhost:8080
 UrlTerritorial=/gestionTerritorial/rest
 UrlEspecies=/especiesVegetales/rest
 UrlEntidades=/rue/rest
 UrlCtrlVerif=/ctrlVerif/rest
+
+# Usuarios de acceso a API's REST:
+# UsRestTax y UsRestTerr => sacvefor (para los servicios de taxonomías y territorial)
+# UsRestRue => scvf-traz (para el RUE)
+# UsRestCtrl => scvf-traz (para CTRL)
+# UsRestCgl => scvf-traz (para CGL)
+UsRestTax=sacvefor
+UsRestTerr=sacvefor
+UsRestRue=scvf-traz
+UsRestCtrl=scvf-traz
+UsRestCgl=scvf-traz
+# Tiempo de vigencia del token recibido
+TimeToken=3600000
 
 # Claves para encriptar y desencriptar las contraseñas de los usurios
 ClaveEncriptar=bosquesnativosycomunidad
